@@ -5,26 +5,26 @@ function ourPhysics.setupWorld()
   return love.physics.newWorld(0, 9.81*64, true)
 end
 
-function ourPhysics.getObjects(world, worldWidth, windowWidth, windowHeight, leftMarginForMoviment, rightMarginForMoviment)
+function ourPhysics.getObjects(world, worldWidth, windowWidth, windowHeight, leftMarginForMoviment, rightMarginForMoviment, groundHeight)
   
   local objects = {} -- tabela para armazenar os objetos
- 
+  
   -- ground
   objects.ground = {}
-  objects.ground.body = love.physics.newBody(world, worldWidth/2, 600-150/2) -- esse pontos são o centro do corpo, que tem 800 de largura e 150 de altura
-  objects.ground.shape = love.physics.newRectangleShape(worldWidth, 150) -- faz o retangulo com largura 800 e altura 150
+  objects.ground.body = love.physics.newBody(world, worldWidth/2, windowHeight-groundHeight/2, "static") -- esse pontos são o centro do corpo, que tem 800 de largura e 150 de altura
+  objects.ground.shape = love.physics.newRectangleShape(worldWidth, groundHeight) -- faz o retangulo com largura 800 e altura 150
   objects.ground.fixture = love.physics.newFixture(objects.ground.body, objects.ground.shape); --attach shape to body
   objects.ground.fixture:setUserData("pista")
   
   -- personagem
   objects.lucio = {}
-  objects.lucio.body = love.physics.newBody(world, leftMarginForMoviment + 20, windowHeight/2, "dynamic") --  ponto incial desse body é o centro da tela e "dynamic" que possibilita o movimento
+  objects.lucio.body = love.physics.newBody(world, leftMarginForMoviment + 20, windowHeight - groundHeight - 20, "static") --  ponto incial desse body é o centro da tela e "dynamic" que possibilita o movimento
   objects.lucio.shape = love.physics.newCircleShape(20) -- 20 é o raio do circulo
   objects.lucio.fixture = love.physics.newFixture(objects.lucio.body, objects.lucio.shape, 1) -- Attach fixture to body and give it a density of 1
   objects.lucio.fixture:setUserData("personagem")
   
   -- MarginForMoviment
-  -- left
+  --[[ left
   objects.leftColider = {}
   objects.leftColider.body = love.physics.newBody(world, leftMarginForMoviment/2, windowHeight/2, "static")
   objects.leftColider.shape = love.physics.newRectangleShape(leftMarginForMoviment, windowHeight)
@@ -33,10 +33,10 @@ function ourPhysics.getObjects(world, worldWidth, windowWidth, windowHeight, lef
   -- right
   objects.rightColider = {}
   objects.rightColider.body = love.physics.newBody(world, windowWidth - (rightMarginForMoviment/2) , windowHeight/2, "static")
-  objects.rightColider.shape = love.physics.newRectangleShape(leftMarginForMoviment, windowHeight)
+  objects.rightColider.shape = love.physics.newRectangleShape(rightMarginForMoviment, windowHeight)
   objects.rightColider.fixture = love.physics.newFixture(objects.rightColider.body, objects.rightColider.shape)
   objects.rightColider.fixture:setUserData("rightColider")
-  
+  --]]
   
   return objects
   

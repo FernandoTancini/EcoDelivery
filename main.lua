@@ -6,21 +6,22 @@ local world
 local objects
 
 local lucioVelXMax = 500
-local larguraDoMundo = 8000
+local worldWidth = 8000
+local worldHeight = 900
 local windowWidth = 800
 local windowHeight = 600
 local leftMarginForMoviment = 150
-local rightMarginForMoviment = 150
+local rightMarginForMoviment = 610
 
-local posicaoXJanelaComRelacaoAPista = 0
-local velXJanelaComrelacaoAPista = 0
+local posicaoXJanelaComRelacaoAoMundo = 0
+local posicaoYJanelaComRelacaoAoMundo = worldHeight - windowHeight - 50
+local velXJanelaEmComparacaoAoMundo = 0
+local velYJanelaEmComparacaoAoMundo = 0
 
 local backgroundHeightScaleFactor = 1
 local quantidadeDeBackgroundsARepetir = 1
 
-local velocidadeDoPersonagemAntesDaColisao = 0
-
-local isPersonagemTocandoPista = false
+local groundHeight = 150
 
 function love.load()
   
@@ -29,12 +30,12 @@ function love.load()
   
   -- background
   background = love.graphics.newImage("imagens/cenario.png")
-  backgroundHeightScaleFactor = love.graphics.getHeight() / background:getHeight()
-  quantidadeDeBackgroundsARepetir = larguraDoMundo / (backgroundHeightScaleFactor * background:getWidth())
+  backgroundHeightScaleFactor = worldHeight / background:getHeight()
+  quantidadeDeBackgroundsARepetir = worldWidth / (backgroundHeightScaleFactor * background:getWidth())
   
   -- world
   world = ourPhysics.setupWorld()
-  objects = ourPhysics.getObjects(world, larguraDoMundo, windowWidth, windowHeight, leftMarginForMoviment, rightMarginForMoviment)
+  objects = ourPhysics.getObjects(world, worldWidth, windowWidth, windowHeight, leftMarginForMoviment, rightMarginForMoviment, groundHeight)
   world:setCallbacks(beginContact, endContact, preSolve, postSolve)
   
 end
@@ -43,31 +44,51 @@ function love.update(dt)
   
   world:update(dt) -- é preciso chamar essa funcao para o phisics atuar com o "seu update"
   
-  -- pegar velocidade e posicao para usa abaixo
-  local lucioVelX, lucioVelY = objects.lucio.body:getLinearVelocity()
-  local lucioX, lucioY = objects.lucio.body:getPosition()
+  -------- em x
   
   -- eventos de teclas pressioandas
   if love.keyboard.isDown("right") then
-    objects.lucio.body:applyForce(200, 0)
+    velXJanelaEmComparacaoAoMundo = velXJanelaEmComparacaoAoMundo + (200 * dt)
   end
   if love.keyboard.isDown("left") then
-    objects.lucio.body:applyForce(-200, 0)
+    velXJanelaEmComparacaoAoMundo = velXJanelaEmComparacaoAoMundo - (200 * dt)
   end
-  
-  if love.keyboard.isDown("up") and isPersonagemTocandoPista then
-    objects.lucio.body:applyForce(0, -4000)
-  end
-  
   -- regular velocidade maxima
-  if lucioVelX > lucioVelXMax then
-    objects.lucio.body:setLinearVelocity(lucioVelXMax, lucioVelY)
-  elseif lucioVelX < - lucioVelXMax then
-    objects.lucio.body:setLinearVelocity(-lucioVelXMax, lucioVelY)
+  if velXJanelaEmComparacaoAoMundo > lucioVelXMax then
+    velXJanelaEmComparacaoAoMundo = lucioVelXMax
+  elseif velXJanelaEmComparacaoAoMundo < - lucioVelXMax then
+    velXJanelaEmComparacaoAoMundo = - lucioVelXMax
+  end
+  -- atualizar posicao
+  posicaoXJanelaComRelacaoAoMundo = posicaoXJanelaComRelacaoAoMundo + (velXJanelaEmComparacaoAoMundo * dt)
+  -- checar limites da posicao
+  if posicaoXJanelaComRelacaoAoMundo < 0 then
+    posicaoXJanelaComRelacaoAoMundo = 0
+    velXJanelaEmComparacaoAoMundo = 0
+  elseif posicaoXJanelaComRelacaoAoMundo > (worldWidth - windowWidth) then
+    posicaoXJanelaComRelacaoAoMundo = (worldWidth - windowWidth)
+    velXJanelaEmComparacaoAoMundo = 0
   end
   
+  ----------- em y 
+  
+  -- eventos de teclas pressioandas
+  -- TODO: esse "velYJanelaEmComparacaoAoMundo == 0 and posicaoYJanelaComRelacaoAoMundo == worldHeight - windowHeight" está provisório
+  if love.keyboard.isDown("up") and velYJanelaEmComparacaoAoMundo == 0 and posicaoYJanelaComRelacaoAoMundo == worldHeight - windowHeight then
+    velYJanelaEmComparacaoAoMundo = velYJanelaEmComparacaoAoMundo - (40000 * dt)
+  end
   -- atualizar posicao
-  posicaoXJanelaComRelacaoAPista = posicaoXJanelaComRelacaoAPista + (velXJanelaComrelacaoAPista * dt)
+  posicaoYJanelaComRelacaoAoMundo = posicaoYJanelaComRelacaoAoMundo + (velYJanelaEmComparacaoAoMundo * dt)
+  -- efeito da gravidade
+  velYJanelaEmComparacaoAoMundo = velYJanelaEmComparacaoAoMundo + (9.8 * love.physics.getMeter() * dt)
+  -- checar limites da posicao
+  if posicaoYJanelaComRelacaoAoMundo > (worldHeight - windowHeight) then
+    posicaoYJanelaComRelacaoAoMundo = (worldHeight - windowHeight)
+    velYJanelaEmComparacaoAoMundo = 0
+  end
+  
+  -- Atualizar posicao do chao
+  objects.ground.body:setPosition(worldWidth/2, worldHeight - (groundHeight/2) - posicaoYJanelaComRelacaoAoMundo)
   
 end
 
@@ -75,63 +96,22 @@ function love.draw()
   
   -- background
   love.graphics.setColor(255,255,255)
-  for i = 0, love.graphics.getWidth() / background:getWidth() do
-    love.graphics.draw(background, (i * background:getWidth() * backgroundHeightScaleFactor) - posicaoXJanelaComRelacaoAPista, 0, 0, backgroundHeightScaleFactor, backgroundHeightScaleFactor)
+  for i = 0,quantidadeDeBackgroundsARepetir, 1 do
+    love.graphics.draw(background, (i * background:getWidth() * backgroundHeightScaleFactor) - posicaoXJanelaComRelacaoAoMundo, - posicaoYJanelaComRelacaoAoMundo, 0, backgroundHeightScaleFactor, backgroundHeightScaleFactor)
   end
   
   ourPhysics.draw(objects)
-  
-  
+    
 end
 
 function beginContact(a, b, coll)
   -- colisao personagem - chao
-  if (a:getUserData() == "personagem" and b:getUserData() == "pista") or (a:getUserData() == "pista" and b:getUserData() == "personagem") then
-    isPersonagemTocandoPista = true
-  end
+  -- nada ainda
 end
  
 function endContact(a, b, coll)
   -- colisao personagem - chao
-  if (a:getUserData() == "personagem" and b:getUserData() == "pista") or (a:getUserData() == "pista" and b:getUserData() == "personagem") then
-    isPersonagemTocandoPista = false
-  end
-  
-  -- colisao personagem - rightColider
-  if (a:getUserData() == "personagem" and b:getUserData() == "rightColider") or (a:getUserData() == "rightColider" and b:getUserData() == "personagem") then
-    velXJanelaComrelacaoAPista = 0
-  end
-  
-  -- colisao personagem - leftColider
-  if (a:getUserData() == "personagem" and b:getUserData() == "leftColider") or (a:getUserData() == "leftColider" and b:getUserData() == "personagem") then
-    velXJanelaComrelacaoAPista = 0
-  end
-end
-
-function preSolve(a, b, coll)
- -- colisao personagem - rightColider
-  if (a:getUserData() == "personagem" and b:getUserData() == "rightColider") or (a:getUserData() == "rightColider" and b:getUserData() == "personagem") then
-    velocidadeDoPersonagemAntesDaColisao, lixo = a:getLinearVelocity()
-  end
-  
-  -- colisao personagem - leftColider
-  if (a:getUserData() == "personagem" and b:getUserData() == "leftColider") or (a:getUserData() == "leftColider" and b:getUserData() == "personagem") then
-    
-  end
-end
- 
-function postSolve(a, b, coll, normalimpulse, tangentimpulse)
- -- colisao personagem - rightColider
-  if (a:getUserData() == "personagem" and b:getUserData() == "rightColider") or (a:getUserData() == "rightColider" and b:getUserData() == "personagem") then
-    velXJanelaComrelacaoAPista = normalimpulse
-    xx, yy = a:getVelocity()
-    a:setVelocity(velocidadeDoPersonagemAntesDaColisao, yy)
-  end
-  
-  -- colisao personagem - leftColider
-  if (a:getUserData() == "personagem" and b:getUserData() == "leftColider") or (a:getUserData() == "leftColider" and b:getUserData() == "personagem") then
-    velXJanelaComrelacaoAPista = - normalimpulse
-  end
+  -- nada ainda
 end
 
 
