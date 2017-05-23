@@ -92,7 +92,7 @@ function ourPhysics.draw(objects)
   love.graphics.polygon("line", objects.lucioT2.body:getWorldPoints(objects.lucioT2.shape:getPoints()))
   love.graphics.setColor(255, 255, 255)
   
-  love.graphics.draw(hero.hero_walk[hero.hero_anim_frame], hero.hero_pos_x ,hero.hero_pos_y, objects.lucioT.body:getAngle(), 1.5, 1.5)
+  love.graphics.draw(hero.hero_walk[hero.hero_anim_frame], objects.lucioT.body:getX() ,objects.lucioT.body:getY(), objects.lucioT.body:getAngle(), 1.5, 1.5)
 
   
   love.graphics.print(objects.lucioL.body:getX(), lucioX, lucioY)

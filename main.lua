@@ -1,4 +1,4 @@
---lalalalala
+
 
 local background
 local lucio
@@ -17,8 +17,6 @@ local reset = false
 hero = {
 hero_walk = {},
 hero_anim_frame = 1,
-hero_pos_x = 400,
-hero_pos_y = 300,
 hero_anim_time = 0 ,
 }
 
@@ -131,9 +129,6 @@ function love.update(dt)
   elseif lucioVelX < - lucioVelXMax then
     objects.lucioL.body:setLinearVelocity(-lucioVelXMax, lucioVelY)
   end
-  
-  hero.hero_pos_x = objects.lucioT.body:getX()
-  hero.hero_pos_y = objects.lucioT.body:getY() -- hero.hero_walk[1]:getHeight()
   
   
 end
