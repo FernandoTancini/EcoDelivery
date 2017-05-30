@@ -83,7 +83,7 @@ function fase.update(dt)
 
   -- seta para a direita
   if love.keyboard.isDown("right") then
-    objects.lucioTop.body:setAngularVelocity(math.pi*1)
+    objects.lucioTop.body:setAngularVelocity(math.pi*1.5)
   end
   
   -- seta para a esquerda
