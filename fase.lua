@@ -1,9 +1,11 @@
 local fase = {}
 
 local world
-local objects
+local objects = {}
 
 local background
+
+local cameraXPosition = 0
 
 local isPersonagemTocandoPista = false
 local isPersonagemTocandoPistaR = false
@@ -24,7 +26,7 @@ end
 
 
 -- LOAD --------------------------------------------------
-function fase.load()
+function fase.load(numeroFase)
   
   -- requires
   ourPhysics = require "ourPhysics"
@@ -42,6 +44,7 @@ function fase.load()
   for x = 1, 4, 1 do
     objects.lucio.framesDeMovimento[x] = love.graphics.newImage ("imagens/lucio0" .. x .. ".png")
   end
+  objects.pista = carregarPista(numeroFase)
 
 end
 
@@ -131,6 +134,9 @@ function fase.update(dt)
     objects.lucioFixadorDaSprite.body:setLinearVelocity(objects.lucioLeftWheel.body:getX()-15, objects.lucioLeftWheel.body:getY()-55)
   end
   
+  -- funcao que atualiza os os obstaculos que devem aparecer de acordo com a posicao da camera com relacao ao mundo
+  ourPhysics.updatePista(cameraXPosition, (cameraXPosition + love.graphics.getHeight()))
+  
 end
 
 
@@ -141,19 +147,28 @@ function fase.draw()
   local lucioX, lucioY = objects.lucioLeftWheel.body:getPosition()
   
   -- atualizar o tarnslate
+  local dx, dy
   if objects.lucioLeftWheel.body:getX() > 200 and objects.lucioLeftWheel.body:getX() < (tamanhoDaPista - 600) then
-    love.graphics.translate(-lucioX+200, -lucioY+450)
+    dx = 200 - lucioX
+    dy = 450 - lucioY
   elseif objects.lucioLeftWheel.body:getX() < 200 then
-    love.graphics.translate(0, -lucioY+450)
+    dx = 0
+    dy = 450 - lucioY
   elseif objects.lucioLeftWheel.body:getX() > (tamanhoDaPista - 600) then
-    love.graphics.translate(-tamanhoDaPista + 600 + 200, -lucioY+450)
+    dx = 200 + 600 - tamanhoDaPista
+    dy = 450 - lucioY
   end
+  love.graphics.translate(dx, dy)
+  -- atualizar a cameraXPosition para ser usada na hora de informar o ourPhysics.updatePista() a posicao da camera em relacao ao mundo
+  cameraXPosition = -dx
 
   -- background
   love.graphics.setColor(255,255,255)
   for x=0, tamanhoDaPista, (background:getWidth() * backgroundHeightScaleFactor) do
     love.graphics.draw(background, x, (love.graphics.getHeight() - alturaDaPista), 0, backgroundHeightScaleFactor, backgroundHeightScaleFactor)
   end
+  
+  -- funcao para o ourPhysics desenhar os objetos do physics
   ourPhysics.draw(objects)
   
 end
@@ -175,6 +190,38 @@ function endContact(a, b, coll)
     -- acabaou contato entre pista e personagem
     isPersonagemTocandoPista = false
   end
+end
+
+function carregarPista(numeroFase)
+    local pista = {}
+    if numeroFase == 1 then
+      pista[1] = criarObstaculoDeLinha(400,450,500,420)
+      pista[2] = criarObstaculoDeLinha(500,420,600,420)
+      pista[3] = criarObstaculoDeLinha(600,420,700,450)
+    end
+    return pista
+end
+
+function criarObstaculoDeLinha(x1,y1,x2,y2, raio)
+  if raio == nil then raio = 2 end
+  local linha = {}
+  local altura = y2 - y1
+  local largura = x2 - x1
+  local coeficienteAngular = altura / largura
+  
+  for i = 0, largura - 1, 1 do
+    linha[i+1] = {}
+    linha[i+1].x = x1 + i
+    linha[i+1].y = y1 + (coeficienteAngular * i)
+    linha[i+1].raio = raio
+  end
+  
+  obstaculoDeLinha = {}
+  obstaculoDeLinha.xInicial = x1
+  obstaculoDeLinha.xFinal = x2
+  obstaculoDeLinha.obstaculo = linha
+  obstaculoDeLinha.shouldAppear = false
+  return obstaculoDeLinha
 end
 
 return fase

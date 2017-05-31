@@ -1,13 +1,16 @@
 local ourPhysics = {}
+local world 
+local objects = {} -- tabela para armazenar os objetos
+
+local pistaFriction = 0.1
 
 function ourPhysics.setupWorld()
   love.physics.setMeter(64)
-  return love.physics.newWorld(0, 9.81*64, true)
+  world = love.physics.newWorld(0, 9.81*64, true)
+  return world
 end
 
 function ourPhysics.getObjects(world, tamanhoDaPista)
-  
-  local objects = {} -- tabela para armazenar os objetos
  
   -- ground
   objects.ground = {}
@@ -15,7 +18,7 @@ function ourPhysics.getObjects(world, tamanhoDaPista)
   objects.ground.shape = love.physics.newRectangleShape(tamanhoDaPista, 150) -- faz o retangulo com largura 800 e altura 150
   objects.ground.fixture = love.physics.newFixture(objects.ground.body, objects.ground.shape); --attach shape to body
   objects.ground.fixture:setUserData("pista")
-  objects.ground.fixture:setFriction(0.1)
+  objects.ground.fixture:setFriction(pistaFriction)
   objects.ground.fixture:setFilterData(1, 1, 1)
   
   
@@ -87,9 +90,58 @@ function ourPhysics.getObjects(world, tamanhoDaPista)
   objects.rightColider.shape = love.physics.newRectangleShape(50, 600)
   objects.rightColider.fixture = love.physics.newFixture(objects.rightColider.body, objects.rightColider.shape)
   objects.rightColider.fixture:setUserData("rightColider")
+  
+  -- set pista (vazia)
+  objects.pista = {}
 
   return objects
   
+end
+
+function ourPhysics.updatePista(xInicialCamera, xFinalCamera)
+  
+  local shouldDestroy = {}
+  local shouldCreate = {}
+  
+  -- atualizar se os obstaculos devem aparecer ou nao
+  for key,value in pairs(objects.pista) do --actualcode
+    if value.xInicial > xFinalCamera or value.xFinal < xInicialCamera then
+      -- esta fora da camera
+      
+      -- checar se esta true e, por isso, devera ser removido
+      if objects.pista[key].shouldAppear == true then table.insert(shouldDestroy, key) end
+      
+      objects.pista[key].shouldAppear = false
+    else
+      -- esta dentro da camera
+      
+      -- checar se esta false e, por isso, devera ser crido
+      if objects.pista[key].shouldAppear == false then table.insert(shouldCreate, key) end
+      
+      objects.pista[key].shouldAppear = true
+    end
+  end
+  
+  -- remover os corpos que precisam ser removidos
+  for key, value in pairs(shouldDestroy) do
+    for k, v in pairs(objects.pista[value].obstaculo) do
+      objects.pista[value].obstaculo[k].body:destroy()
+    end
+  end
+  
+  -- criar os corpos que precisam ser criados
+  for key, value in pairs(shouldCreate) do
+    
+    for k, v in pairs(objects.pista[value].obstaculo) do
+      objects.pista[value].obstaculo[k].body = love.physics.newBody(world, objects.pista[value].obstaculo[k].x, objects.pista[value].obstaculo[k].y)
+      objects.pista[value].obstaculo[k].shape = love.physics.newCircleShape(objects.pista[value].obstaculo[k].raio)
+      objects.pista[value].obstaculo[k].fixture = love.physics.newFixture(objects.pista[value].obstaculo[k].body, objects.pista[value].obstaculo[k].shape, 5)
+      objects.pista[value].obstaculo[k].fixture:setUserData("pista")
+      objects.pista[value].obstaculo[k].fixture:setFriction(pistaFriction)
+      objects.pista[value].obstaculo[k].fixture:setFilterData(1, 1, 1)
+    end
+    
+  end
 end
 
 function ourPhysics.draw(objects)
@@ -111,6 +163,20 @@ function ourPhysics.draw(objects)
   love.graphics.draw(objects.lucio.framesDeMovimento[objects.lucio.frameAtual], objects.lucioFixadorDaSprite.body:getX() ,objects.lucioFixadorDaSprite.body:getY(), objects.lucioFixadorDaSprite.body:getAngle(), 1.5, 1.5)
   -- TODO (to do): tentar nao precisar mais do lucioFixadorDaSprite. Segue exemplo na linha abaixo, mas que aualmwente nao da certo.
   --love.graphics.draw(objects.lucio.framesDeMovimento[objects.lucio.frameAtual], objects.lucioTop.body:getX() ,objects.lucioTop.body:getY(), objects.lucioTop.body:getAngle(), 1.5, 1.5)
+  
+  -- desenhar a pista
+  love.graphics.setColor(255, 0, 0)
+  for key,value in pairs(objects.pista) do --actualcode
+    
+    -- verificar se é pra desenhar esse obstaculo
+    if objects.pista[key].shouldAppear then
+      for k, v in pairs(objects.pista[key].obstaculo) do
+        love.graphics.circle("fill", objects.pista[key].obstaculo[k].x, objects.pista[key].obstaculo[k].y, objects.pista[key].obstaculo[k].raio)
+      end
+    end
+    
+    
+  end
 
 end
 
