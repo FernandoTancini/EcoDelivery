@@ -8,7 +8,6 @@ local background
 local cameraXPosition = 0
 
 local isPersonagemTocandoPista = false
-local isPersonagemTocandoPistaR = false
 local reset = false
 
 local ourPhysics
@@ -195,14 +194,45 @@ end
 function carregarPista(numeroFase)
     local pista = {}
     if numeroFase == 1 then
-      pista[1] = criarObstaculoDeLinha(400,450,500,420)
-      pista[2] = criarObstaculoDeLinha(500,420,600,420)
-      pista[3] = criarObstaculoDeLinha(600,420,700,450)
+      
+      pista[1] = criarObstaculoDeLinha(500,450,650,410)
+      pista[2] = criarObstaculoDeLinha(650,410,1200,410)
+      pista[3] = criarObstaculoDeLinha(1200,410,1350,450)
+      
+      --pista[1] = criarObstaculoDeLinha(400,450,500,420)
+      --pista[2] = criarObstaculoDeLinha(500,420,2000,420)
+      --pista[3] = criarObstaculoDeLinha(1000,420,1100,450)
     end
     return pista
 end
 
-function criarObstaculoDeLinha(x1,y1,x2,y2, raio)
+function criarObstaculoDeLinha(x1,y1,x2,y2)
+  if raio == nil then raio = 2 end
+  local linha = {}
+  local altura = y2 - y1
+  local largura = x2 - x1
+  
+  local comprimento = math.sqrt(largura*largura + altura*altura)
+  local angulacao = math.asin(altura/comprimento)
+  
+  local xDoCentro = x1 + (x2 - x1) / 2
+  local yDoCentro = y1 + (y2 - y1) / 2
+  
+  obstaculoDeLinha = {}
+  obstaculoDeLinha.xInicial = x1
+  obstaculoDeLinha.xFinal = x2
+  obstaculoDeLinha.yInicial = y1
+  obstaculoDeLinha.yFinal = y2
+  obstaculoDeLinha.xDoCentro = xDoCentro
+  obstaculoDeLinha.yDoCentro = yDoCentro
+  obstaculoDeLinha.comprimento = comprimento
+  obstaculoDeLinha.angulacao = angulacao
+  obstaculoDeLinha.shouldAppear = false
+  obstaculoDeLinha.obstaculo = {}
+  return obstaculoDeLinha
+end
+
+--[[function criarObstaculoDeLinha(x1,y1,x2,y2, raio)
   if raio == nil then raio = 2 end
   local linha = {}
   local altura = y2 - y1
@@ -222,6 +252,6 @@ function criarObstaculoDeLinha(x1,y1,x2,y2, raio)
   obstaculoDeLinha.obstaculo = linha
   obstaculoDeLinha.shouldAppear = false
   return obstaculoDeLinha
-end
+end--]]
 
 return fase

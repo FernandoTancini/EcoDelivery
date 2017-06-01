@@ -124,6 +124,49 @@ function ourPhysics.updatePista(xInicialCamera, xFinalCamera)
   
   -- remover os corpos que precisam ser removidos
   for key, value in pairs(shouldDestroy) do
+    objects.pista[value].obstaculo.body:destroy()
+  end
+  
+  -- criar os corpos que precisam ser criados
+  for key, value in pairs(shouldCreate) do
+    
+    objects.pista[value].obstaculo.body = love.physics.newBody(world, objects.pista[value].xDoCentro, objects.pista[value].yDoCentro)
+    objects.pista[value].obstaculo.shape = love.physics.newRectangleShape(objects.pista[value].comprimento, 1)
+    --objects.pista[value].obstaculo.shape = love.physics.newRectangleShape(objects.pista[value].xDoCentro, objects.pista[value].yDoCentro, objects.pista[value].comprimento, 1, objects.pista[value].angulacao)
+    objects.pista[value].obstaculo.fixture = love.physics.newFixture(objects.pista[value].obstaculo.body, objects.pista[value].obstaculo.shape, 5)
+    objects.pista[value].obstaculo.fixture:setUserData("pista")
+    objects.pista[value].obstaculo.fixture:setFriction(pistaFriction)
+    objects.pista[value].obstaculo.fixture:setFilterData(1, 1, 1)
+    objects.pista[value].obstaculo.body:setAngle(objects.pista[value].angulacao)
+  end
+end
+
+--[[function ourPhysics.updatePista(xInicialCamera, xFinalCamera)
+  
+  local shouldDestroy = {}
+  local shouldCreate = {}
+  
+  -- atualizar se os obstaculos devem aparecer ou nao
+  for key,value in pairs(objects.pista) do --actualcode
+    if value.xInicial > xFinalCamera or value.xFinal < xInicialCamera then
+      -- esta fora da camera
+      
+      -- checar se esta true e, por isso, devera ser removido
+      if objects.pista[key].shouldAppear == true then table.insert(shouldDestroy, key) end
+      
+      objects.pista[key].shouldAppear = false
+    else
+      -- esta dentro da camera
+      
+      -- checar se esta false e, por isso, devera ser crido
+      if objects.pista[key].shouldAppear == false then table.insert(shouldCreate, key) end
+      
+      objects.pista[key].shouldAppear = true
+    end
+  end
+  
+  -- remover os corpos que precisam ser removidos
+  for key, value in pairs(shouldDestroy) do
     for k, v in pairs(objects.pista[value].obstaculo) do
       objects.pista[value].obstaculo[k].body:destroy()
     end
@@ -142,7 +185,7 @@ function ourPhysics.updatePista(xInicialCamera, xFinalCamera)
     end
     
   end
-end
+end--]]
 
 function ourPhysics.draw(objects)
   
@@ -169,10 +212,8 @@ function ourPhysics.draw(objects)
   for key,value in pairs(objects.pista) do --actualcode
     
     -- verificar se é pra desenhar esse obstaculo
-    if objects.pista[key].shouldAppear then
-      for k, v in pairs(objects.pista[key].obstaculo) do
-        love.graphics.circle("fill", objects.pista[key].obstaculo[k].x, objects.pista[key].obstaculo[k].y, objects.pista[key].obstaculo[k].raio)
-      end
+    if value.shouldAppear then
+        love.graphics.polygon("fill", value.obstaculo.body:getWorldPoints(value.obstaculo.shape:getPoints()))
     end
     
     
