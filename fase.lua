@@ -14,8 +14,13 @@ local ourPhysics
 -- vatriaveis parametricas
 local lucioVelXMax = 500
 local lucioVelYMax = 250
-local tamanhoDaPista = 8000
+local tamanhoDaPista = 7500
 local alturaDaPista = 740
+
+local casaImage
+local casaPosition
+
+local tempoDecorrido = 0
 
 
 function fase.init(tamanhoPista, alturaPista)
@@ -43,13 +48,21 @@ function fase.load(numeroFase)
   for x = 1, 4, 1 do
     ourPhysics.objects.lucio.framesDeMovimento[x] = love.graphics.newImage ("imagens/lucio0" .. x .. ".png")
   end
-  ourPhysics.objects.pista = carregarPista(numeroFase)
+  
+  local construidorDePista = require "construidorDePista"
+  ourPhysics.objects.pista = construidorDePista.carregarPista(numeroFase)
+  
+  -- inicioalizar casa do final da pista
+  casaImage, casaPosition = construidorDePista.getCasaImageAndPosition(numeroFase)
 
 end
 
 
 -- UPDATE --------------------------------------------------
 function fase.update(dt)
+  
+  -- atualizar o tempoDecorrido
+  tempoDecorrido = tempoDecorrido + dt
   
   -- eh preciso chamar essa funcao para o phisics atuar com o "seu update"
   world:update(dt)
@@ -111,7 +124,7 @@ function fase.update(dt)
   end
   
   -- checar se o Y do pesonagem ja cresceu muito, ou seja, se o personagem caiu para fora da pista
-  if ourPhysics.objects.lucioLeftWheel.body:getY() > 1500 then
+  if lucioY > 500 then
     reset = true
   end
   
@@ -121,19 +134,26 @@ function fase.update(dt)
     ourPhysics.objects.lucioLeftWheel.body:setAngularVelocity(0)
     ourPhysics.objects.lucioRightWheel.body:setAngularVelocity(0)
     ourPhysics.objects.lucioTop.body:setAngularVelocity(0)
+    ourPhysics.objects.lucioMorteColider.body:setAngularVelocity(0)
     ourPhysics.objects.lucioFixadorDaSprite.body:setAngularVelocity(0)
     ourPhysics.objects.lucioLeftWheel.body:setAngle(0)
     ourPhysics.objects.lucioRightWheel.body:setAngle(0)
     ourPhysics.objects.lucioTop.body:setAngle(0)
+    ourPhysics.objects.lucioMorteColider.body:setAngle(0)
     ourPhysics.objects.lucioFixadorDaSprite.body:setAngle(0)
     ourPhysics.objects.lucioLeftWheel.body:setLinearVelocity(0, 0)
     ourPhysics.objects.lucioRightWheel.body:setLinearVelocity(0, 0)
     ourPhysics.objects.lucioTop.body:setLinearVelocity(0, 0)
+    ourPhysics.objects.lucioMorteColider.body:setLinearVelocity(0, 0)
     ourPhysics.objects.lucioFixadorDaSprite.body:setLinearVelocity(0, 0)
-    ourPhysics.objects.lucioLeftWheel.body:setPosition(800/2, 600/2)
-    ourPhysics.objects.lucioRightWheel.body:setPosition(800/2+40, 600/2)
+    ourPhysics.objects.lucioLeftWheel.body:setPosition(85, 400)
+    ourPhysics.objects.lucioRightWheel.body:setPosition(125, 400)
     ourPhysics.objects.lucioTop.body:setPosition(ourPhysics.objects.lucioLeftWheel.body:getX()+20, ourPhysics.objects.lucioLeftWheel.body:getY()-25)
+    ourPhysics.objects.lucioMorteColider.body:setPosition(ourPhysics.objects.lucioLeftWheel.body:getX()+20, ourPhysics.objects.lucioLeftWheel.body:getY()-30)
     ourPhysics.objects.lucioFixadorDaSprite.body:setLinearVelocity(ourPhysics.objects.lucioLeftWheel.body:getX()-15, ourPhysics.objects.lucioLeftWheel.body:getY()-55)
+    
+    -- zerar timer
+    tempoDecorrido = 0
   end
   
   -- funcao que atualiza os os obstaculos que devem aparecer de acordo com a posicao da camera com relacao ao mundo
@@ -141,6 +161,13 @@ function fase.update(dt)
   
   -- atualizar is tocando pista
   isPersonagemTocandoPista = updateIsTocandoPista()
+  
+  
+  -- ver se chegou no final
+  if lucioX > casaPosition[1] + 50 then
+    reset = true
+  end
+  
 end
 
 
@@ -172,8 +199,16 @@ function fase.draw()
     love.graphics.draw(background, x, (love.graphics.getHeight() - alturaDaPista), 0, backgroundHeightScaleFactor, backgroundHeightScaleFactor)
   end
   
+  -- desenhar casa
+  love.graphics.setColor(255,255,255)
+  love.graphics.draw(casaImage, casaPosition[1] , casaPosition[2], 0, 2,2)
+  
   -- funcao para o ourPhysics desenhar os objetos do physics
   ourPhysics.draw(ourPhysics.objects)
+  
+  -- printar a "hud rudimentar"
+  love.graphics.print("Posicao: "..string.sub(tostring(lucioX), 0, 2).."  de 7500", 10 - dx, 10 - dy)
+  love.graphics.print("Tempo decorrido: "..string.sub(tostring(tempoDecorrido), 0, 3), 10 - dx, 25 - dy)
   
 end
 
@@ -239,57 +274,6 @@ function endContact(a, b, coll)
   
 end
 
-function carregarPista(numeroFase)
-    local pista = {}
-    if numeroFase == 1 then
-      
-      --chao
-      pista[1] = criarObstaculoDeLinha(0,450,8000,450)
-      --primeira rampa
-      pista[2] = criarObstaculoDeLinha(500,450,650,410)
-      pista[3] = criarObstaculoDeLinha(650,410,1200,410)
-      pista[4] = criarObstaculoDeLinha(1200,410,1350,450)
-      --bloco 1 
-      pista[5] = criarObstaculoDeLinha(1500,450,1500,410)
-      pista[6] = criarObstaculoDeLinha(1500,410,1560,410)
-      pista[7] = criarObstaculoDeLinha(1560,410,1560,450)
-      --bloco 2
-      pista[8] = criarObstaculoDeLinha(1600,450,1600,390)
-      pista[9] = criarObstaculoDeLinha(1600,390,1660,390)
-      pista[10] = criarObstaculoDeLinha(1660,390,1660,450)
-      
-    end
-    return pista
-end
-
-function criarObstaculoDeLinha(x1,y1,x2,y2)
-  if raio == nil then raio = 2 end
-  local linha = {}
-  local altura = y2 - y1
-  local largura = x2 - x1
-  
-  local comprimento = math.sqrt(largura*largura + altura*altura)
-  local angulacao = math.asin(altura/comprimento)
-  
-  local xDoCentro = x1 + (x2 - x1) / 2
-  local yDoCentro = y1 + (y2 - y1) / 2
-  
-  obstaculoDeLinha = {}
-  obstaculoDeLinha.xInicial = x1
-  obstaculoDeLinha.xFinal = x2
-  obstaculoDeLinha.yInicial = y1
-  obstaculoDeLinha.yFinal = y2
-  obstaculoDeLinha.xDoCentro = xDoCentro
-  obstaculoDeLinha.yDoCentro = yDoCentro
-  obstaculoDeLinha.comprimento = comprimento
-  obstaculoDeLinha.angulacao = angulacao
-  obstaculoDeLinha.shouldAppear = false
-  obstaculoDeLinha.isTocandoRodaEsquerdaDoPersonagem = false
-  obstaculoDeLinha.isTocandoRodaDireitaDoPersonagem = false
-  obstaculoDeLinha.obstaculo = {}
-  return obstaculoDeLinha
-end
-
 function updateIsTocandoPista()
   local isTocandoAlgumObjetoDaPista = false
   for key,value in pairs(ourPhysics.objects.pista) do
@@ -301,27 +285,5 @@ function updateIsTocandoPista()
   end
   return isTocandoAlgumObjetoDaPista
 end
-
---[[function criarObstaculoDeLinha(x1,y1,x2,y2, raio)
-  if raio == nil then raio = 2 end
-  local linha = {}
-  local altura = y2 - y1
-  local largura = x2 - x1
-  local coeficienteAngular = altura / largura
-  
-  for i = 0, largura - 1, 1 do
-    linha[i+1] = {}
-    linha[i+1].x = x1 + i
-    linha[i+1].y = y1 + (coeficienteAngular * i)
-    linha[i+1].raio = raio
-  end
-  
-  obstaculoDeLinha = {}
-  obstaculoDeLinha.xInicial = x1
-  obstaculoDeLinha.xFinal = x2
-  obstaculoDeLinha.obstaculo = linha
-  obstaculoDeLinha.shouldAppear = false
-  return obstaculoDeLinha
-end--]]
 
 return fase

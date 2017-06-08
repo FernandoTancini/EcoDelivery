@@ -16,7 +16,7 @@ function ourPhysics.setObjects(world, tamanhoDaPista)
   
   -- roda esquerda do personagem
   ourPhysics.objects.lucioLeftWheel = {}
-  ourPhysics.objects.lucioLeftWheel.body = love.physics.newBody(world, 800/2, 600/2, "dynamic") --  ponto incial desse body é o centro da tela e "dynamic" que possibilita o movimento
+  ourPhysics.objects.lucioLeftWheel.body = love.physics.newBody(world, 85, 400, "dynamic") --  ponto incial desse body é o centro da tela e "dynamic" que possibilita o movimento
   ourPhysics.objects.lucioLeftWheel.shape = love.physics.newCircleShape(10) -- 10 é o raio do circulo
   ourPhysics.objects.lucioLeftWheel.fixture = love.physics.newFixture(ourPhysics.objects.lucioLeftWheel.body, ourPhysics.objects.lucioLeftWheel.shape, 5) -- Attach fixture to body and give it a density of 1
   ourPhysics.objects.lucioLeftWheel.fixture:setUserData("personagemLeftWheel")
@@ -25,7 +25,7 @@ function ourPhysics.setObjects(world, tamanhoDaPista)
   
   -- roda direita do personagem
   ourPhysics.objects.lucioRightWheel ={}
-  ourPhysics.objects.lucioRightWheel.body = love.physics.newBody(world, 880/2, 600/2, "dynamic")
+  ourPhysics.objects.lucioRightWheel.body = love.physics.newBody(world, 125, 400, "dynamic")
   ourPhysics.objects.lucioRightWheel.shape = love.physics.newCircleShape(10)
   ourPhysics.objects.lucioRightWheel.fixture = love.physics.newFixture(ourPhysics.objects.lucioRightWheel.body, ourPhysics.objects.lucioRightWheel.shape, 5)
   ourPhysics.objects.lucioRightWheel.fixture:setUserData("personagemRightWheels")
@@ -143,52 +143,6 @@ function ourPhysics.updatePista(xInicialCamera, xFinalCamera)
   end
 end
 
---[[function ourPhysics.updatePista(xInicialCamera, xFinalCamera)
-  
-  local shouldDestroy = {}
-  local shouldCreate = {}
-  
-  -- atualizar se os obstaculos devem aparecer ou nao
-  for key,value in pairs(ourPhysics.objects.pista) do --actualcode
-    if value.xInicial > xFinalCamera or value.xFinal < xInicialCamera then
-      -- esta fora da camera
-      
-      -- checar se esta true e, por isso, devera ser removido
-      if ourPhysics.objects.pista[key].shouldAppear == true then table.insert(shouldDestroy, key) end
-      
-      ourPhysics.objects.pista[key].shouldAppear = false
-    else
-      -- esta dentro da camera
-      
-      -- checar se esta false e, por isso, devera ser crido
-      if ourPhysics.objects.pista[key].shouldAppear == false then table.insert(shouldCreate, key) end
-      
-      ourPhysics.objects.pista[key].shouldAppear = true
-    end
-  end
-  
-  -- remover os corpos que precisam ser removidos
-  for key, value in pairs(shouldDestroy) do
-    for k, v in pairs(ourPhysics.objects.pista[value].obstaculo) do
-      ourPhysics.objects.pista[value].obstaculo[k].body:destroy()
-    end
-  end
-  
-  -- criar os corpos que precisam ser criados
-  for key, value in pairs(shouldCreate) do
-    
-    for k, v in pairs(ourPhysics.objects.pista[value].obstaculo) do
-      ourPhysics.objects.pista[value].obstaculo[k].body = love.physics.newBody(world, ourPhysics.objects.pista[value].obstaculo[k].x, ourPhysics.objects.pista[value].obstaculo[k].y)
-      ourPhysics.objects.pista[value].obstaculo[k].shape = love.physics.newCircleShape(ourPhysics.objects.pista[value].obstaculo[k].raio)
-      ourPhysics.objects.pista[value].obstaculo[k].fixture = love.physics.newFixture(ourPhysics.objects.pista[value].obstaculo[k].body, ourPhysics.objects.pista[value].obstaculo[k].shape, 5)
-      ourPhysics.objects.pista[value].obstaculo[k].fixture:setUserData("pista")
-      ourPhysics.objects.pista[value].obstaculo[k].fixture:setFriction(pistaFriction)
-      ourPhysics.objects.pista[value].obstaculo[k].fixture:setFilterData(1, 1, 1)
-    end
-    
-  end
-end--]]
-
 function ourPhysics.draw()
   
   -- personagem
@@ -204,8 +158,6 @@ function ourPhysics.draw()
   
   love.graphics.setColor(255, 255, 255)
   love.graphics.draw(ourPhysics.objects.lucio.framesDeMovimento[ourPhysics.objects.lucio.frameAtual], ourPhysics.objects.lucioFixadorDaSprite.body:getX() ,ourPhysics.objects.lucioFixadorDaSprite.body:getY(), ourPhysics.objects.lucioFixadorDaSprite.body:getAngle(), 1.5, 1.5)
-  -- TODO (to do): tentar nao precisar mais do lucioFixadorDaSprite. Segue exemplo na linha abaixo, mas que aualmwente nao da certo.
-  --love.graphics.draw(ourPhysics.objects.lucio.framesDeMovimento[ourPhysics.objects.lucio.frameAtual], ourPhysics.objects.lucioTop.body:getX() ,ourPhysics.objects.lucioTop.body:getY(), ourPhysics.objects.lucioTop.body:getAngle(), 1.5, 1.5)
   
   -- desenhar a pista
   love.graphics.setColor(255, 0, 0)
