@@ -3,6 +3,7 @@ local world
 ourPhysics.objects = {} -- tabela para armazenar os objetos
 
 local pistaFriction = 0.1
+local pistaFrictionLateral = 0
 
 function ourPhysics.setupWorld()
   love.physics.setMeter(64)
@@ -131,7 +132,15 @@ function ourPhysics.updatePista(xInicialCamera, xFinalCamera)
   
   -- criar os corpos que precisam ser criados
   for key, value in pairs(shouldCreate) do
-    
+    --[[if value < 2 then 
+    ourPhysics.objects.pista[value].obstaculo.body = love.physics.newBody(world, ourPhysics.objects.pista[value].xDoCentro, ourPhysics.objects.pista[value].yDoCentro)
+    ourPhysics.objects.pista[value].obstaculo.shape = love.physics.newRectangleShape(ourPhysics.objects.pista[value].comprimento, 2)
+    ourPhysics.objects.pista[value].obstaculo.fixture = love.physics.newFixture(ourPhysics.objects.pista[value].obstaculo.body, ourPhysics.objects.pista[value].obstaculo.shape, 5)
+    ourPhysics.objects.pista[value].obstaculo.fixture:setUserData({"pista", value})
+    ourPhysics.objects.pista[value].obstaculo.fixture:setFriction(pistaFrictionLateral)
+    ourPhysics.objects.pista[value].obstaculo.fixture:setFilterData(1, 1, 1)
+    ourPhysics.objects.pista[value].obstaculo.body:setAngle(ourPhysics.objects.pista[value].angulacao)
+    elseif value > 1 then]]
     ourPhysics.objects.pista[value].obstaculo.body = love.physics.newBody(world, ourPhysics.objects.pista[value].xDoCentro, ourPhysics.objects.pista[value].yDoCentro)
     ourPhysics.objects.pista[value].obstaculo.shape = love.physics.newRectangleShape(ourPhysics.objects.pista[value].comprimento, 2)
     --ourPhysics.objects.pista[value].obstaculo.shape = love.physics.newRectangleShape(ourPhysics.objects.pista[value].xDoCentro, ourPhysics.objects.pista[value].yDoCentro, ourPhysics.objects.pista[value].comprimento, 1, ourPhysics.objects.pista[value].angulacao)
@@ -140,6 +149,7 @@ function ourPhysics.updatePista(xInicialCamera, xFinalCamera)
     ourPhysics.objects.pista[value].obstaculo.fixture:setFriction(pistaFriction)
     ourPhysics.objects.pista[value].obstaculo.fixture:setFilterData(1, 1, 1)
     ourPhysics.objects.pista[value].obstaculo.body:setAngle(ourPhysics.objects.pista[value].angulacao)
+    --end
   end
 end
 

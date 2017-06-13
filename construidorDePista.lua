@@ -113,6 +113,34 @@ function pista.carregarPista(numeroFase)
     return pista
 end
 
+function criarObstaculoDeLinhaLateral(x1,y1,x2,y2)
+  if raio == nil then raio = 2 end
+  local linha = {}
+  local altura = y2 - y1
+  local largura = x2 - x1
+  
+  local comprimento = math.sqrt(largura*largura + altura*altura)
+  local angulacao = math.asin(altura/comprimento)
+  
+  local xDoCentro = x1 + (x2 - x1) / 2
+  local yDoCentro = y1 + (y2 - y1) / 2
+  
+  obstaculoDeLinhaLateral = {}
+  obstaculoDeLinhaLateral.xInicial = x1
+  obstaculoDeLinhaLateral.xFinal = x2
+  obstaculoDeLinhaLateral.yInicial = y1
+  obstaculoDeLinhaLateral.yFinal = y2
+  obstaculoDeLinhaLateral.xDoCentro = xDoCentro
+  obstaculoDeLinhaLateral.yDoCentro = yDoCentro
+  obstaculoDeLinhaLateral.comprimento = comprimento
+  obstaculoDeLinhaLateral.angulacao = angulacao
+  obstaculoDeLinhaLateral.shouldAppear = false
+  obstaculoDeLinhaLateral.isTocandoRodaEsquerdaDoPersonagem = false
+  obstaculoDeLinhaLateral.isTocandoRodaDireitaDoPersonagem = false
+  obstaculoDeLinhaLateral.obstaculo = {}
+  return obstaculoDeLinhaLateral
+end
+
 function criarObstaculoDeLinha(x1,y1,x2,y2)
   if raio == nil then raio = 2 end
   local linha = {}
