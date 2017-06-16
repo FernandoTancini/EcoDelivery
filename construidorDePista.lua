@@ -1,7 +1,9 @@
 local pista = {}
+local pistalateral = {}
 
 function pista.carregarPista(numeroFase)
     local pista = {}
+    local pistalateral = {}
     if numeroFase == 1 then
       
       --chao
@@ -9,20 +11,16 @@ function pista.carregarPista(numeroFase)
       
       --(3)
       table.insert(pista, criarObstaculoDeLinha(500,450,700,370))
-      table.insert(pista, criarObstaculoDeLinha(700,370,700,450))
       
       --chao
       table.insert(pista, criarObstaculoDeLinha(700,450,1300,450))
       
       --(1)+(1)+(1)+(1)
       --(1.1)
-      table.insert(pista, criarObstaculoDeLinha(1300,450,1300,415))
       table.insert(pista, criarObstaculoDeLinha(1300,415,1380,415))
-      table.insert(pista, criarObstaculoDeLinha(1380,415,1380,450))
       --chao
       table.insert(pista, criarObstaculoDeLinha(1380,450,1450,450))
       --(1.2)
-      table.insert(pista, criarObstaculoDeLinha(1450,450,1450,415))
       table.insert(pista, criarObstaculoDeLinha(1450,415,1530,415))
       table.insert(pista, criarObstaculoDeLinha(1530,415,1530,450))
       --chao
@@ -113,7 +111,7 @@ function pista.carregarPista(numeroFase)
     return pista
 end
 
-function criarObstaculoDeLinhaLateral(x1,y1,x2,y2)
+function criarObstaculoDeLinhalateral(x1,y1,x2,y2)
   if raio == nil then raio = 2 end
   local linha = {}
   local altura = y2 - y1
@@ -125,20 +123,20 @@ function criarObstaculoDeLinhaLateral(x1,y1,x2,y2)
   local xDoCentro = x1 + (x2 - x1) / 2
   local yDoCentro = y1 + (y2 - y1) / 2
   
-  obstaculoDeLinhaLateral = {}
-  obstaculoDeLinhaLateral.xInicial = x1
-  obstaculoDeLinhaLateral.xFinal = x2
-  obstaculoDeLinhaLateral.yInicial = y1
-  obstaculoDeLinhaLateral.yFinal = y2
-  obstaculoDeLinhaLateral.xDoCentro = xDoCentro
-  obstaculoDeLinhaLateral.yDoCentro = yDoCentro
-  obstaculoDeLinhaLateral.comprimento = comprimento
-  obstaculoDeLinhaLateral.angulacao = angulacao
-  obstaculoDeLinhaLateral.shouldAppear = false
-  obstaculoDeLinhaLateral.isTocandoRodaEsquerdaDoPersonagem = false
-  obstaculoDeLinhaLateral.isTocandoRodaDireitaDoPersonagem = false
-  obstaculoDeLinhaLateral.obstaculo = {}
-  return obstaculoDeLinhaLateral
+  obstaculoDeLinhalateral = {}
+  obstaculoDeLinhalateral.xInicial = x1
+  obstaculoDeLinhalateral.xFinal = x2
+  obstaculoDeLinhalateral.yInicial = y1
+  obstaculoDeLinhalateral.yFinal = y2
+  obstaculoDeLinhalateral.xDoCentro = xDoCentro
+  obstaculoDeLinhalateral.yDoCentro = yDoCentro
+  obstaculoDeLinhalateral.comprimento = comprimento
+  obstaculoDeLinhalateral.angulacao = angulacao
+  obstaculoDeLinhalateral.shouldAppear = false
+  obstaculoDeLinhalateral.isTocandoRodaEsquerdaDoPersonagem = false
+  obstaculoDeLinhalateral.isTocandoRodaDireitaDoPersonagem = false
+  obstaculoDeLinhalateral.obstaculo = {}
+  return obstaculoDeLinhalateral
 end
 
 function criarObstaculoDeLinha(x1,y1,x2,y2)

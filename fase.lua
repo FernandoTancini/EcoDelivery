@@ -21,6 +21,9 @@ local casaImage
 local casaPosition
 
 local tempoDecorrido = 0
+local temperaturaDaPizza = 60
+local framesTermometro = {}
+local framesTermometroAtual = 1
 
 
 function fase.init(tamanhoPista, alturaPista)
@@ -49,6 +52,11 @@ function fase.load(numeroFase)
     ourPhysics.objects.lucio.framesDeMovimento[x] = love.graphics.newImage ("imagens/lucio0" .. x .. ".png")
   end
   
+  -- carregar imagens do termometro
+  for x = 1, 5, 1 do
+    framesTermometro[x] = love.graphics.newImage ("imagens/termometro"..x..".png")
+  end
+  
   local construidorDePista = require "construidorDePista"
   ourPhysics.objects.pista = construidorDePista.carregarPista(numeroFase)
   
@@ -61,8 +69,29 @@ end
 -- UPDATE --------------------------------------------------
 function fase.update(dt)
   
+  -- atualizar temperatura da pizza
+  temperaturaDaPizza = temperaturaDaPizza - dt/3
   -- atualizar o tempoDecorrido
   tempoDecorrido = tempoDecorrido + dt
+  -- atualizar frame do termometro
+  if temperaturaDaPizza > 55 then
+    framesTermometroAtual = 1
+  elseif temperaturaDaPizza > 50 then
+    framesTermometroAtual = 2
+  elseif temperaturaDaPizza > 45 then
+    framesTermometroAtual = 3
+  elseif temperaturaDaPizza > 40 then
+    framesTermometroAtual = 4
+  elseif temperaturaDaPizza > 35 then
+    framesTermometroAtual = 5
+  end
+  
+  
+  
+  if tempoDecorrido > 60 then
+    reset = true
+  end
+  
   
   -- eh preciso chamar essa funcao para o phisics atuar com o "seu update"
   world:update(dt)
@@ -74,7 +103,7 @@ function fase.update(dt)
   local lucioX, lucioY = ourPhysics.objects.lucioLeftWheel.body:getPosition()
   
   -- seta para cima
-  if love.keyboard.isDown("up") then
+  if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
     ourPhysics.objects.lucioLeftWheel.body:applyForce(200, 0)
     ourPhysics.objects.lucioRightWheel.body:applyForce(200, 0)
     
@@ -91,18 +120,18 @@ function fase.update(dt)
   end
   
   -- seta para baixo
-  if love.keyboard.isDown("down") then
+  if love.keyboard.isDown("down") or love.keyboard.isDown("s") then
     ourPhysics.objects.lucioLeftWheel.body:applyForce(-200, 0)
     ourPhysics.objects.lucioRightWheel.body:applyForce(-200, 0)
   end
 
   -- seta para a direita
-  if love.keyboard.isDown("right") then
+  if love.keyboard.isDown("right") or love.keyboard.isDown("d") then
     ourPhysics.objects.lucioTop.body:setAngularVelocity(math.pi*1.5)
   end
   
   -- seta para a esquerda
-  if love.keyboard.isDown("left") then
+  if love.keyboard.isDown("left") or love.keyboard.isDown("a") then
     ourPhysics.objects.lucioTop.body:setAngularVelocity(-math.pi*2)
   end
   
@@ -154,6 +183,7 @@ function fase.update(dt)
     
     -- zerar timer
     tempoDecorrido = 0
+    temperaturaDaPizza = 60
   end
   
   -- funcao que atualiza os os obstaculos que devem aparecer de acordo com a posicao da camera com relacao ao mundo
@@ -207,8 +237,13 @@ function fase.draw()
   ourPhysics.draw(ourPhysics.objects)
   
   -- printar a "hud rudimentar"
-  love.graphics.print("Posicao: "..string.sub(tostring(lucioX), 0, 2).."  de 7500", 10 - dx, 10 - dy)
-  love.graphics.print("Tempo decorrido: "..string.sub(tostring(tempoDecorrido), 0, 3), 10 - dx, 25 - dy)
+  love.graphics.print("Posicao: "..string.sub(tostring(lucioX), 0, 4).."  de 7500", 10 - dx, 10 - dy)
+  love.graphics.print("Tempo decorrido: "..string.sub(tostring(tempoDecorrido), 0, 4), 10 - dx, 25 - dy)
+  love.graphics.print("Temperatura da Pizza: "..string.sub(tostring(temperaturaDaPizza), 0, 4), 10 - dx, 40 - dy)
+  
+  -- pirntar HUD
+  love.graphics.setColor(255,255,255)
+  love.graphics.draw(framesTermometro[framesTermometroAtual], 740-dx, -dy, 0, .15, .15)
   
 end
 
@@ -274,6 +309,64 @@ function endContact(a, b, coll)
   
 end
 
+--[[Updated upstream
+--=======
+function carregarPista(numeroFase)
+    local pista = {}
+    if numeroFase == 1 then
+      
+      --chao
+      pista[1] = criarObstaculoDeLinha(0,450,8000,450)
+      --primeira rampa
+      pista[2] = criarObstaculoDeLinha(500,450,650,410)
+      pista[3] = criarObstaculoDeLinha(650,410,1200,410)
+      pista[4] = criarObstaculoDeLinha(1200,410,1350,450)
+      --bloco 1 
+      pista[5] = criarObstaculoDeLinha(1500,450,1500,410)
+      pista[6] = criarObstaculoDeLinha(1500,410,1560,410)
+      pista[7] = criarObstaculoDeLinha(1560,410,1560,450)
+      --bloco 2
+      pista[8] = criarObstaculoDeLinha(1600,450,1600,390)
+      pista[9] = criarObstaculoDeLinha(1600,390,1660,390)
+      pista[10] = criarObstaculoDeLinha(1660,390,1660,450)
+      --bloco 3
+      pista[11] = criarObstaculoDeLinha(1700,450,1700,370)
+      pista[12] = criarObstaculoDeLinha(1700,370,1760,370)
+      pista[13] = criarObstaculoDeLinha(1760,370,1760,450)
+      
+    end
+    return pista
+end
+
+function criarObstaculoDeLinha(x1,y1,x2,y2)
+  if raio == nil then raio = 2 end
+  local linha = {}
+  local altura = y2 - y1
+  local largura = x2 - x1
+  
+  local comprimento = math.sqrt(largura*largura + altura*altura)
+  local angulacao = math.asin(altura/comprimento)
+  
+  local xDoCentro = x1 + (x2 - x1) / 2
+  local yDoCentro = y1 + (y2 - y1) / 2
+  
+  obstaculoDeLinha = {}
+  obstaculoDeLinha.xInicial = x1
+  obstaculoDeLinha.xFinal = x2
+  obstaculoDeLinha.yInicial = y1
+  obstaculoDeLinha.yFinal = y2
+  obstaculoDeLinha.xDoCentro = xDoCentro
+  obstaculoDeLinha.yDoCentro = yDoCentro
+  obstaculoDeLinha.comprimento = comprimento
+  obstaculoDeLinha.angulacao = angulacao
+  obstaculoDeLinha.shouldAppear = false
+  obstaculoDeLinha.isTocandoRodaEsquerdaDoPersonagem = false
+  obstaculoDeLinha.isTocandoRodaDireitaDoPersonagem = false
+  obstaculoDeLinha.obstaculo = {}
+  return obstaculoDeLinha
+end]]
+
+-->>>>>>> Stashed changes
 function updateIsTocandoPista()
   local isTocandoAlgumObjetoDaPista = false
   for key,value in pairs(ourPhysics.objects.pista) do

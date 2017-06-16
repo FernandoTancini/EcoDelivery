@@ -97,6 +97,7 @@ function ourPhysics.setObjects(world, tamanhoDaPista)
   
   -- set pista (vazia)
   ourPhysics.objects.pista = {}
+  ourPhysics.objects.pistalateral = {}
 
   
 end
@@ -125,22 +126,39 @@ function ourPhysics.updatePista(xInicialCamera, xFinalCamera)
     end
   end
   
+  -- atualizar se os obstaculos devem aparecer ou nao LATERAL
+  for key,value in pairs(ourPhysics.objects.pistalateral) do
+    if value.xInicial > xFinalCamera or value.xFinal < xInicialCamera then
+      -- esta fora da camera
+      
+      -- checar se esta true e, por isso, devera ser removido
+      if ourPhysics.objects.pistalateral[key].shouldAppear == true then table.insert(shouldDestroy, key) end
+      
+      ourPhysics.objects.pistalateral[key].shouldAppear = false
+    else
+      -- esta dentro da camera
+      
+      -- checar se esta false e, por isso, devera ser crido
+      if ourPhysics.objects.pistalateral[key].shouldAppear == false then table.insert(shouldCreate, key) end
+      
+      ourPhysics.objects.pistalateral[key].shouldAppear = true
+    end
+  end
+  
   -- remover os corpos que precisam ser removidos
   for key, value in pairs(shouldDestroy) do
     ourPhysics.objects.pista[value].obstaculo.body:destroy()
+    --ourPhysics.objects.pistalateral[value].obstaculo.body:destroy()
+  end
+  
+  -- remover os corpos que precisam ser removidos LATERAL
+  for key, value in pairs(shouldDestroy) do
+    
   end
   
   -- criar os corpos que precisam ser criados
   for key, value in pairs(shouldCreate) do
-    --[[if value < 2 then 
-    ourPhysics.objects.pista[value].obstaculo.body = love.physics.newBody(world, ourPhysics.objects.pista[value].xDoCentro, ourPhysics.objects.pista[value].yDoCentro)
-    ourPhysics.objects.pista[value].obstaculo.shape = love.physics.newRectangleShape(ourPhysics.objects.pista[value].comprimento, 2)
-    ourPhysics.objects.pista[value].obstaculo.fixture = love.physics.newFixture(ourPhysics.objects.pista[value].obstaculo.body, ourPhysics.objects.pista[value].obstaculo.shape, 5)
-    ourPhysics.objects.pista[value].obstaculo.fixture:setUserData({"pista", value})
-    ourPhysics.objects.pista[value].obstaculo.fixture:setFriction(pistaFrictionLateral)
-    ourPhysics.objects.pista[value].obstaculo.fixture:setFilterData(1, 1, 1)
-    ourPhysics.objects.pista[value].obstaculo.body:setAngle(ourPhysics.objects.pista[value].angulacao)
-    elseif value > 1 then]]
+    
     ourPhysics.objects.pista[value].obstaculo.body = love.physics.newBody(world, ourPhysics.objects.pista[value].xDoCentro, ourPhysics.objects.pista[value].yDoCentro)
     ourPhysics.objects.pista[value].obstaculo.shape = love.physics.newRectangleShape(ourPhysics.objects.pista[value].comprimento, 2)
     --ourPhysics.objects.pista[value].obstaculo.shape = love.physics.newRectangleShape(ourPhysics.objects.pista[value].xDoCentro, ourPhysics.objects.pista[value].yDoCentro, ourPhysics.objects.pista[value].comprimento, 1, ourPhysics.objects.pista[value].angulacao)
@@ -149,7 +167,17 @@ function ourPhysics.updatePista(xInicialCamera, xFinalCamera)
     ourPhysics.objects.pista[value].obstaculo.fixture:setFriction(pistaFriction)
     ourPhysics.objects.pista[value].obstaculo.fixture:setFilterData(1, 1, 1)
     ourPhysics.objects.pista[value].obstaculo.body:setAngle(ourPhysics.objects.pista[value].angulacao)
-    --end
+    
+    
+    ourPhysics.objects.pistalateral[value].obstaculo.body = love.physics.newBody(world, ourPhysics.objects.pistalateral[value].xDoCentro, ourPhysics.objects.pistalateral[value].yDoCentro)
+    ourPhysics.objects.pistalateral[value].obstaculo.shape = love.physics.newRectangleShape(ourPhysics.objects.pistalateral[value].comprimento, 2)
+    ourPhysics.objects.pistalateral[value].obstaculo.fixture = love.physics.newFixture(ourPhysics.objects.pistalateral[value].obstaculo.body, ourPhysics.objects.pistalateral[value].obstaculo.shape, 5)
+    ourPhysics.objects.pistalateral[value].obstaculo.fixture:setUserData({"pista", value})
+    ourPhysics.objects.pistalateral[value].obstaculo.fixture:setFriction(pistaFrictionLateral)
+    ourPhysics.objects.pistalateral[value].obstaculo.fixture:setFilterData(1, 1, 1)
+    ourPhysics.objects.pistalateral[value].obstaculo.body:setAngle(ourPhysics.objects.pistalateral[value].angulacao)
+    
+    
   end
 end
 
@@ -174,6 +202,16 @@ function ourPhysics.draw()
   for key,value in pairs(ourPhysics.objects.pista) do --actualcode
     
     -- verificar se Ã© pra desenhar esse obstaculo
+    if value.shouldAppear then
+        love.graphics.polygon("fill", value.obstaculo.body:getWorldPoints(value.obstaculo.shape:getPoints()))
+    end
+    
+    
+  end
+  
+  for key,value in pairs(ourPhysics.objects.pistalateral) do --actualcode
+    
+    -- verificar se Ž pra desenhar esse obstaculo
     if value.shouldAppear then
         love.graphics.polygon("fill", value.obstaculo.body:getWorldPoints(value.obstaculo.shape:getPoints()))
     end
