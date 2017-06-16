@@ -5,9 +5,12 @@ local world
 local background
 
 local cameraXPosition = 0
+local cameraYPosition = 0
 
 local isPersonagemTocandoPista = false
-local reset = false
+
+-- essa variavel deve ser "subObjeto" do "objeto" fase para podermos acessa-la pelo arquivo main usando fase.reset
+fase.reset = false
 
 local ourPhysics
 
@@ -89,7 +92,7 @@ function fase.update(dt)
   
   
   if tempoDecorrido > 60 then
-    reset = true
+    fase.reset = true
   end
   
   
@@ -154,12 +157,12 @@ function fase.update(dt)
   
   -- checar se o Y do pesonagem ja cresceu muito, ou seja, se o personagem caiu para fora da pista
   if lucioY > 500 then
-    reset = true
+    fase.reset = true
   end
   
-  -- checar se eh para dar reset
-  if love.keyboard.isDown("q") or reset then
-    reset = false
+  -- checar se eh para dar fase.reset
+  if fase.reset then
+    fase.reset = false
     ourPhysics.objects.lucioLeftWheel.body:setAngularVelocity(0)
     ourPhysics.objects.lucioRightWheel.body:setAngularVelocity(0)
     ourPhysics.objects.lucioTop.body:setAngularVelocity(0)
@@ -195,7 +198,7 @@ function fase.update(dt)
   
   -- ver se chegou no final
   if lucioX > casaPosition[1] + 50 then
-    reset = true
+    fase.reset = true
   end
   
 end
@@ -222,6 +225,7 @@ function fase.draw()
   love.graphics.translate(dx, dy)
   -- atualizar a cameraXPosition para ser usada na hora de informar o ourPhysics.updatePista() a posicao da camera em relacao ao mundo
   cameraXPosition = -dx
+  cameraYPosition = -dy
 
   -- background
   love.graphics.setColor(255,255,255)
@@ -275,7 +279,7 @@ function beginContact(a, b,  coll)
   
   -- checar se houve contato entre pista e o topo do personagem
   if (a:getUserData() == "personagemMorteColider" and b:getUserData()[1] == "pista") or (a:getUserData()[1] == "pista" and b:getUserData() == "personagemMorteColider") then
-    reset = true
+    fase.reset = true
   end
 end
  
@@ -309,63 +313,6 @@ function endContact(a, b, coll)
   
 end
 
---[[Updated upstream
---=======
-function carregarPista(numeroFase)
-    local pista = {}
-    if numeroFase == 1 then
-      
-      --chao
-      pista[1] = criarObstaculoDeLinha(0,450,8000,450)
-      --primeira rampa
-      pista[2] = criarObstaculoDeLinha(500,450,650,410)
-      pista[3] = criarObstaculoDeLinha(650,410,1200,410)
-      pista[4] = criarObstaculoDeLinha(1200,410,1350,450)
-      --bloco 1 
-      pista[5] = criarObstaculoDeLinha(1500,450,1500,410)
-      pista[6] = criarObstaculoDeLinha(1500,410,1560,410)
-      pista[7] = criarObstaculoDeLinha(1560,410,1560,450)
-      --bloco 2
-      pista[8] = criarObstaculoDeLinha(1600,450,1600,390)
-      pista[9] = criarObstaculoDeLinha(1600,390,1660,390)
-      pista[10] = criarObstaculoDeLinha(1660,390,1660,450)
-      --bloco 3
-      pista[11] = criarObstaculoDeLinha(1700,450,1700,370)
-      pista[12] = criarObstaculoDeLinha(1700,370,1760,370)
-      pista[13] = criarObstaculoDeLinha(1760,370,1760,450)
-      
-    end
-    return pista
-end
-
-function criarObstaculoDeLinha(x1,y1,x2,y2)
-  if raio == nil then raio = 2 end
-  local linha = {}
-  local altura = y2 - y1
-  local largura = x2 - x1
-  
-  local comprimento = math.sqrt(largura*largura + altura*altura)
-  local angulacao = math.asin(altura/comprimento)
-  
-  local xDoCentro = x1 + (x2 - x1) / 2
-  local yDoCentro = y1 + (y2 - y1) / 2
-  
-  obstaculoDeLinha = {}
-  obstaculoDeLinha.xInicial = x1
-  obstaculoDeLinha.xFinal = x2
-  obstaculoDeLinha.yInicial = y1
-  obstaculoDeLinha.yFinal = y2
-  obstaculoDeLinha.xDoCentro = xDoCentro
-  obstaculoDeLinha.yDoCentro = yDoCentro
-  obstaculoDeLinha.comprimento = comprimento
-  obstaculoDeLinha.angulacao = angulacao
-  obstaculoDeLinha.shouldAppear = false
-  obstaculoDeLinha.isTocandoRodaEsquerdaDoPersonagem = false
-  obstaculoDeLinha.isTocandoRodaDireitaDoPersonagem = false
-  obstaculoDeLinha.obstaculo = {}
-  return obstaculoDeLinha
-end]]
-
 -->>>>>>> Stashed changes
 function updateIsTocandoPista()
   local isTocandoAlgumObjetoDaPista = false
@@ -378,5 +325,14 @@ function updateIsTocandoPista()
   end
   return isTocandoAlgumObjetoDaPista
 end
+
+function fase.getXInicialCamera() 
+  return cameraXPosition
+end
+function fase.getYInicialCamera() 
+  return cameraYPosition
+end
+
+
 
 return fase
