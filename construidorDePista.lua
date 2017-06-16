@@ -11,16 +11,20 @@ function pista.carregarPista(numeroFase)
       
       --(3)
       table.insert(pista, criarObstaculoDeLinha(500,450,700,370))
+      table.insert(pista, criarObstaculoDeLinha(700,370,700,450))
       
       --chao
       table.insert(pista, criarObstaculoDeLinha(700,450,1300,450))
       
       --(1)+(1)+(1)+(1)
       --(1.1)
+      table.insert(pista, criarObstaculoDeLinha(1300,450,1300,415))
       table.insert(pista, criarObstaculoDeLinha(1300,415,1380,415))
+      table.insert(pista, criarObstaculoDeLinha(1380,415,1380,450))
       --chao
       table.insert(pista, criarObstaculoDeLinha(1380,450,1450,450))
       --(1.2)
+      table.insert(pista, criarObstaculoDeLinha(1450,450,1450,415))
       table.insert(pista, criarObstaculoDeLinha(1450,415,1530,415))
       table.insert(pista, criarObstaculoDeLinha(1530,415,1530,450))
       --chao

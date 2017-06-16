@@ -169,13 +169,13 @@ function ourPhysics.updatePista(xInicialCamera, xFinalCamera)
     ourPhysics.objects.pista[value].obstaculo.body:setAngle(ourPhysics.objects.pista[value].angulacao)
     
     
-    ourPhysics.objects.pistalateral[value].obstaculo.body = love.physics.newBody(world, ourPhysics.objects.pistalateral[value].xDoCentro, ourPhysics.objects.pistalateral[value].yDoCentro)
+    --[[ourPhysics.objects.pistalateral[value].obstaculo.body = love.physics.newBody(world, ourPhysics.objects.pistalateral[value].xDoCentro, ourPhysics.objects.pistalateral[value].yDoCentro)
     ourPhysics.objects.pistalateral[value].obstaculo.shape = love.physics.newRectangleShape(ourPhysics.objects.pistalateral[value].comprimento, 2)
     ourPhysics.objects.pistalateral[value].obstaculo.fixture = love.physics.newFixture(ourPhysics.objects.pistalateral[value].obstaculo.body, ourPhysics.objects.pistalateral[value].obstaculo.shape, 5)
     ourPhysics.objects.pistalateral[value].obstaculo.fixture:setUserData({"pista", value})
     ourPhysics.objects.pistalateral[value].obstaculo.fixture:setFriction(pistaFrictionLateral)
     ourPhysics.objects.pistalateral[value].obstaculo.fixture:setFilterData(1, 1, 1)
-    ourPhysics.objects.pistalateral[value].obstaculo.body:setAngle(ourPhysics.objects.pistalateral[value].angulacao)
+    ourPhysics.objects.pistalateral[value].obstaculo.body:setAngle(ourPhysics.objects.pistalateral[value].angulacao)]]
     
     
   end
