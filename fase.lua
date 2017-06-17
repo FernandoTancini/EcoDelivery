@@ -41,7 +41,7 @@ function fase.load(numeroFase)
   -- requires
   ourPhysics = require "ourPhysics"
   
-  -- background
+  -- definir a imágem de background e também a escala dela
   background = love.graphics.newImage("imagens/cenario.png")
   backgroundHeightScaleFactor = alturaDaPista / background:getHeight()
   
@@ -227,7 +227,7 @@ function fase.draw()
   cameraXPosition = -dx
   cameraYPosition = -dy
 
-  -- background
+  -- desenhar o background
   love.graphics.setColor(255,255,255)
   for x=0, tamanhoDaPista, (background:getWidth() * backgroundHeightScaleFactor) do
     love.graphics.draw(background, x, (love.graphics.getHeight() - alturaDaPista), 0, backgroundHeightScaleFactor, backgroundHeightScaleFactor)

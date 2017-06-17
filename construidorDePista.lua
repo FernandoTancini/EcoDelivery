@@ -6,8 +6,9 @@ function pista.carregarPista(numeroFase)
     local pistalateral = {}
     if numeroFase == 1 then
       
-      --chao
-      table.insert(pista, criarObstaculoDeLinha(0,450,500,450))
+      -- inserir o objeto que representa o chao na array que armazena todos objetos da pista
+      -- essa array pista será lida pelo método ourPhysics.updatePista() para a construcao da mesma pelo love.physics
+      table.insert(pista, criarObstaculoDeLinha(0,450,8000,450))
       
       --(3)
       table.insert(pista, criarObstaculoDeLinha(500,450,700,370))
@@ -113,34 +114,6 @@ function pista.carregarPista(numeroFase)
       
     end
     return pista
-end
-
-function criarObstaculoDeLinhalateral(x1,y1,x2,y2)
-  if raio == nil then raio = 2 end
-  local linha = {}
-  local altura = y2 - y1
-  local largura = x2 - x1
-  
-  local comprimento = math.sqrt(largura*largura + altura*altura)
-  local angulacao = math.asin(altura/comprimento)
-  
-  local xDoCentro = x1 + (x2 - x1) / 2
-  local yDoCentro = y1 + (y2 - y1) / 2
-  
-  obstaculoDeLinhalateral = {}
-  obstaculoDeLinhalateral.xInicial = x1
-  obstaculoDeLinhalateral.xFinal = x2
-  obstaculoDeLinhalateral.yInicial = y1
-  obstaculoDeLinhalateral.yFinal = y2
-  obstaculoDeLinhalateral.xDoCentro = xDoCentro
-  obstaculoDeLinhalateral.yDoCentro = yDoCentro
-  obstaculoDeLinhalateral.comprimento = comprimento
-  obstaculoDeLinhalateral.angulacao = angulacao
-  obstaculoDeLinhalateral.shouldAppear = false
-  obstaculoDeLinhalateral.isTocandoRodaEsquerdaDoPersonagem = false
-  obstaculoDeLinhalateral.isTocandoRodaDireitaDoPersonagem = false
-  obstaculoDeLinhalateral.obstaculo = {}
-  return obstaculoDeLinhalateral
 end
 
 function criarObstaculoDeLinha(x1,y1,x2,y2)
