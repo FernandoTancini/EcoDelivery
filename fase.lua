@@ -41,7 +41,7 @@ function fase.load(numeroFase)
   -- requires
   ourPhysics = require "ourPhysics"
   
-  -- definir a imágem de background e também a escala dela
+  -- definir a imagem de background e também a escala dela
   background = love.graphics.newImage("imagens/cenario.png")
   backgroundHeightScaleFactor = alturaDaPista / background:getHeight()
   

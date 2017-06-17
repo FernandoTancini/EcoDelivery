@@ -75,7 +75,7 @@ function love.draw()
     love.graphics.print("Pressione a tecla \"b\" para voltar ao jogo,\na tecla \"m\" para sair do jogo e voltar ao menu,\ne a tecla \"r\" para reiniciar o jogo.", fase.getXInicialCamera() + 100, fase.getYInicialCamera() + (alturaTela/2))
     
   elseif (estadoAtual == "menu") then
-    love.graphics.setBackgroundColor(50,0,0)
+    love.graphics.setBackgroundColor(0,0,0)
     love.graphics.print("Pressione as teclas \"C\" e \"U\" ao mesmo tempo para comecar uma nova partida na Fase 1.", 100, 280)
     
   end

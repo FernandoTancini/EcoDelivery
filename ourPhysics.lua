@@ -3,7 +3,6 @@ local world
 ourPhysics.objects = {} -- tabela para armazenar os objetos
 
 local pistaFriction = 0.1
-local pistaFrictionLateral = 0
 
 function ourPhysics.setupWorld()
   love.physics.setMeter(64)
@@ -97,7 +96,6 @@ function ourPhysics.setObjects(world, tamanhoDaPista)
   
   -- set pista (vazia)
   ourPhysics.objects.pista = {}
-  ourPhysics.objects.pistalateral = {}
 
   
 end
@@ -128,7 +126,6 @@ function ourPhysics.updatePista(xInicialCamera, xFinalCamera)
   -- remover os corpos que precisam ser removidos
   for key, value in pairs(shouldDestroy) do
     ourPhysics.objects.pista[value].obstaculo.body:destroy()
-    --ourPhysics.objects.pistalateral[value].obstaculo.body:destroy()
   end
   
   -- criar os corpos que precisam ser criados
@@ -156,27 +153,17 @@ function ourPhysics.draw()
   love.graphics.polygon("line", ourPhysics.objects.lucioTop.body:getWorldPoints(ourPhysics.objects.lucioTop.shape:getPoints()))
   
   love.graphics.setColor(0,255,0)
-  love.graphics.polygon("line", ourPhysics.objects.lucioMorteColider.body:getWorldPoints(ourPhysics.objects.lucioMorteColider.shape:getPoints()))
+  --love.graphics.polygon("line", ourPhysics.objects.lucioMorteColider.body:getWorldPoints(ourPhysics.objects.lucioMorteColider.shape:getPoints()))
   
   
   love.graphics.setColor(255, 255, 255)
   love.graphics.draw(ourPhysics.objects.lucio.framesDeMovimento[ourPhysics.objects.lucio.frameAtual], ourPhysics.objects.lucioFixadorDaSprite.body:getX() ,ourPhysics.objects.lucioFixadorDaSprite.body:getY(), ourPhysics.objects.lucioFixadorDaSprite.body:getAngle(), 1.5, 1.5)
   
   -- desenhar a pista
-  love.graphics.setColor(255, 0, 0)
-  for key,value in pairs(ourPhysics.objects.pista) do --actualcode
+  love.graphics.setColor(0, 0, 255)
+  for key,value in pairs(ourPhysics.objects.pista) do
     
-    -- verificar se Ã© pra desenhar esse obstaculo
-    if value.shouldAppear then
-        love.graphics.polygon("fill", value.obstaculo.body:getWorldPoints(value.obstaculo.shape:getPoints()))
-    end
-    
-    
-  end
-  
-  for key,value in pairs(ourPhysics.objects.pistalateral) do --actualcode
-    
-    -- verificar se Ž pra desenhar esse obstaculo
+    -- verificar se eh pra desenhar esse obstaculo
     if value.shouldAppear then
         love.graphics.polygon("fill", value.obstaculo.body:getWorldPoints(value.obstaculo.shape:getPoints()))
     end

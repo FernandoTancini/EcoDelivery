@@ -1,14 +1,12 @@
 local pista = {}
-local pistalateral = {}
 
 function pista.carregarPista(numeroFase)
     local pista = {}
-    local pistalateral = {}
     if numeroFase == 1 then
       
       -- inserir o objeto que representa o chao na array que armazena todos objetos da pista
       -- essa array pista será lida pelo método ourPhysics.updatePista() para a construcao da mesma pelo love.physics
-      table.insert(pista, criarObstaculoDeLinha(0,450,8000,450))
+      table.insert(pista, criarObstaculoDeLinha(0,450,500,450))
       
       --(3)
       table.insert(pista, criarObstaculoDeLinha(500,450,700,370))
