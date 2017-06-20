@@ -148,7 +148,7 @@ function fase.update(dt)
   -- regular velocidade maxima
   if lucioVelX > lucioVelXMax then
     ourPhysics.objects.lucioLeftWheel.body:setLinearVelocity(lucioVelXMax, lucioVelY)
-  elseif lucioVelX < - lucioVelXMax then
+  elseif lucioVelX < -lucioVelXMax then
     ourPhysics.objects.lucioLeftWheel.body:setLinearVelocity(-lucioVelXMax, lucioVelY)
   end
   if lucioVelY < - lucioVelYMax then

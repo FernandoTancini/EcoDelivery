@@ -152,7 +152,7 @@ function ourPhysics.draw()
   love.graphics.circle("line", ourPhysics.objects.lucioRightWheel.body:getX(), ourPhysics.objects.lucioRightWheel.body:getY(), ourPhysics.objects.lucioRightWheel.shape:getRadius())
   love.graphics.polygon("line", ourPhysics.objects.lucioTop.body:getWorldPoints(ourPhysics.objects.lucioTop.shape:getPoints()))
   
-  love.graphics.setColor(0,255,0)
+  love.graphics.setColor(255,0,0)
   --love.graphics.polygon("line", ourPhysics.objects.lucioMorteColider.body:getWorldPoints(ourPhysics.objects.lucioMorteColider.shape:getPoints()))
   
   
@@ -160,7 +160,7 @@ function ourPhysics.draw()
   love.graphics.draw(ourPhysics.objects.lucio.framesDeMovimento[ourPhysics.objects.lucio.frameAtual], ourPhysics.objects.lucioFixadorDaSprite.body:getX() ,ourPhysics.objects.lucioFixadorDaSprite.body:getY(), ourPhysics.objects.lucioFixadorDaSprite.body:getAngle(), 1.5, 1.5)
   
   -- desenhar a pista
-  love.graphics.setColor(0, 0, 255)
+  love.graphics.setColor(255, 0, 0)
   for key,value in pairs(ourPhysics.objects.pista) do
     
     -- verificar se eh pra desenhar esse obstaculo
