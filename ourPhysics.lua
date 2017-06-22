@@ -10,13 +10,13 @@ function ourPhysics.setupWorld()
   return world
 end
 
-function ourPhysics.setObjects(world, tamanhoDaPista)
+function ourPhysics.setObjects(world, tamanhoDaPista, xInicialLucio)
   
   -- personagem
   
   -- roda esquerda do personagem
   ourPhysics.objects.lucioLeftWheel = {}
-  ourPhysics.objects.lucioLeftWheel.body = love.physics.newBody(world, 85, 400, "dynamic") --  ponto incial desse body é o centro da tela e "dynamic" que possibilita o movimento
+  ourPhysics.objects.lucioLeftWheel.body = love.physics.newBody(world, xInicialLucio, 400, "dynamic") --  ponto incial desse body é o centro da tela e "dynamic" que possibilita o movimento
   ourPhysics.objects.lucioLeftWheel.shape = love.physics.newCircleShape(10) -- 10 é o raio do circulo
   ourPhysics.objects.lucioLeftWheel.fixture = love.physics.newFixture(ourPhysics.objects.lucioLeftWheel.body, ourPhysics.objects.lucioLeftWheel.shape, 5) -- Attach fixture to body and give it a density of 1
   ourPhysics.objects.lucioLeftWheel.fixture:setUserData("personagemLeftWheel")
@@ -25,7 +25,7 @@ function ourPhysics.setObjects(world, tamanhoDaPista)
   
   -- roda direita do personagem
   ourPhysics.objects.lucioRightWheel ={}
-  ourPhysics.objects.lucioRightWheel.body = love.physics.newBody(world, 125, 400, "dynamic")
+  ourPhysics.objects.lucioRightWheel.body = love.physics.newBody(world, ourPhysics.objects.lucioLeftWheel.body:getX()+40, 400, "dynamic")
   ourPhysics.objects.lucioRightWheel.shape = love.physics.newCircleShape(10)
   ourPhysics.objects.lucioRightWheel.fixture = love.physics.newFixture(ourPhysics.objects.lucioRightWheel.body, ourPhysics.objects.lucioRightWheel.shape, 5)
   ourPhysics.objects.lucioRightWheel.fixture:setUserData("personagemRightWheels")
@@ -148,9 +148,9 @@ function ourPhysics.draw()
   -- personagem
   love.graphics.setColor(193, 47, 14)
   
-  love.graphics.circle("line", ourPhysics.objects.lucioLeftWheel.body:getX(), ourPhysics.objects.lucioLeftWheel.body:getY(), ourPhysics.objects.lucioLeftWheel.shape:getRadius())
-  love.graphics.circle("line", ourPhysics.objects.lucioRightWheel.body:getX(), ourPhysics.objects.lucioRightWheel.body:getY(), ourPhysics.objects.lucioRightWheel.shape:getRadius())
-  love.graphics.polygon("line", ourPhysics.objects.lucioTop.body:getWorldPoints(ourPhysics.objects.lucioTop.shape:getPoints()))
+  --love.graphics.circle("line", ourPhysics.objects.lucioLeftWheel.body:getX(), ourPhysics.objects.lucioLeftWheel.body:getY(), ourPhysics.objects.lucioLeftWheel.shape:getRadius())
+  --love.graphics.circle("line", ourPhysics.objects.lucioRightWheel.body:getX(), ourPhysics.objects.lucioRightWheel.body:getY(), ourPhysics.objects.lucioRightWheel.shape:getRadius())
+  --love.graphics.polygon("line", ourPhysics.objects.lucioTop.body:getWorldPoints(ourPhysics.objects.lucioTop.shape:getPoints()))
   
   love.graphics.setColor(255,0,0)
   --love.graphics.polygon("line", ourPhysics.objects.lucioMorteColider.body:getWorldPoints(ourPhysics.objects.lucioMorteColider.shape:getPoints()))

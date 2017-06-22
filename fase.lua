@@ -4,6 +4,9 @@ local world
 
 local background
 
+-- variavel p saber se a fase foi completada
+local acabou = false
+
 local cameraXPosition = 0
 local cameraYPosition = 0
 
@@ -19,6 +22,8 @@ local lucioVelXMax = 500
 local lucioVelYMax = 250
 local tamanhoDaPista = 7500
 local alturaDaPista = 740
+
+local xInicialLucio = 85
 
 local casaImage
 local casaPosition
@@ -47,7 +52,7 @@ function fase.load(numeroFase)
   
   -- world
   world = ourPhysics.setupWorld()
-  ourPhysics.setObjects(world, tamanhoDaPista)
+  ourPhysics.setObjects(world, tamanhoDaPista, xInicialLucio)
   world:setCallbacks(beginContact, endContact)
   
   -- popular a tabela de sprites do personagem
@@ -71,6 +76,35 @@ end
 
 -- UPDATE --------------------------------------------------
 function fase.update(dt)
+  
+  -- checar se eh para dar fase.reset
+  if fase.reset then
+    fase.reset = false
+    ourPhysics.objects.lucioLeftWheel.body:setAngularVelocity(0)
+    ourPhysics.objects.lucioRightWheel.body:setAngularVelocity(0)
+    ourPhysics.objects.lucioTop.body:setAngularVelocity(0)
+    ourPhysics.objects.lucioMorteColider.body:setAngularVelocity(0)
+    ourPhysics.objects.lucioFixadorDaSprite.body:setAngularVelocity(0)
+    ourPhysics.objects.lucioLeftWheel.body:setAngle(0)
+    ourPhysics.objects.lucioRightWheel.body:setAngle(0)
+    ourPhysics.objects.lucioTop.body:setAngle(0)
+    ourPhysics.objects.lucioMorteColider.body:setAngle(0)
+    ourPhysics.objects.lucioFixadorDaSprite.body:setAngle(0)
+    ourPhysics.objects.lucioLeftWheel.body:setLinearVelocity(0, 0)
+    ourPhysics.objects.lucioRightWheel.body:setLinearVelocity(0, 0)
+    ourPhysics.objects.lucioTop.body:setLinearVelocity(0, 0)
+    ourPhysics.objects.lucioMorteColider.body:setLinearVelocity(0, 0)
+    ourPhysics.objects.lucioFixadorDaSprite.body:setLinearVelocity(0, 0)
+    ourPhysics.objects.lucioLeftWheel.body:setPosition(xInicialLucio, 400)
+    ourPhysics.objects.lucioRightWheel.body:setPosition(xInicialLucio+40, 400)
+    ourPhysics.objects.lucioTop.body:setPosition(ourPhysics.objects.lucioLeftWheel.body:getX()+20, ourPhysics.objects.lucioLeftWheel.body:getY()-25)
+    ourPhysics.objects.lucioMorteColider.body:setPosition(ourPhysics.objects.lucioLeftWheel.body:getX()+20, ourPhysics.objects.lucioLeftWheel.body:getY()-30)
+    ourPhysics.objects.lucioFixadorDaSprite.body:setLinearVelocity(ourPhysics.objects.lucioLeftWheel.body:getX()-15, ourPhysics.objects.lucioLeftWheel.body:getY()-55)
+    
+    -- zerar timer
+    tempoDecorrido = 0
+    temperaturaDaPizza = 60
+  end
   
   -- atualizar temperatura da pizza
   temperaturaDaPizza = temperaturaDaPizza - dt/3
@@ -160,34 +194,7 @@ function fase.update(dt)
     fase.reset = true
   end
   
-  -- checar se eh para dar fase.reset
-  if fase.reset then
-    fase.reset = false
-    ourPhysics.objects.lucioLeftWheel.body:setAngularVelocity(0)
-    ourPhysics.objects.lucioRightWheel.body:setAngularVelocity(0)
-    ourPhysics.objects.lucioTop.body:setAngularVelocity(0)
-    ourPhysics.objects.lucioMorteColider.body:setAngularVelocity(0)
-    ourPhysics.objects.lucioFixadorDaSprite.body:setAngularVelocity(0)
-    ourPhysics.objects.lucioLeftWheel.body:setAngle(0)
-    ourPhysics.objects.lucioRightWheel.body:setAngle(0)
-    ourPhysics.objects.lucioTop.body:setAngle(0)
-    ourPhysics.objects.lucioMorteColider.body:setAngle(0)
-    ourPhysics.objects.lucioFixadorDaSprite.body:setAngle(0)
-    ourPhysics.objects.lucioLeftWheel.body:setLinearVelocity(0, 0)
-    ourPhysics.objects.lucioRightWheel.body:setLinearVelocity(0, 0)
-    ourPhysics.objects.lucioTop.body:setLinearVelocity(0, 0)
-    ourPhysics.objects.lucioMorteColider.body:setLinearVelocity(0, 0)
-    ourPhysics.objects.lucioFixadorDaSprite.body:setLinearVelocity(0, 0)
-    ourPhysics.objects.lucioLeftWheel.body:setPosition(85, 400)
-    ourPhysics.objects.lucioRightWheel.body:setPosition(125, 400)
-    ourPhysics.objects.lucioTop.body:setPosition(ourPhysics.objects.lucioLeftWheel.body:getX()+20, ourPhysics.objects.lucioLeftWheel.body:getY()-25)
-    ourPhysics.objects.lucioMorteColider.body:setPosition(ourPhysics.objects.lucioLeftWheel.body:getX()+20, ourPhysics.objects.lucioLeftWheel.body:getY()-30)
-    ourPhysics.objects.lucioFixadorDaSprite.body:setLinearVelocity(ourPhysics.objects.lucioLeftWheel.body:getX()-15, ourPhysics.objects.lucioLeftWheel.body:getY()-55)
-    
-    -- zerar timer
-    tempoDecorrido = 0
-    temperaturaDaPizza = 60
-  end
+  
   
   -- funcao que atualiza os os obstaculos que devem aparecer de acordo com a posicao da camera com relacao ao mundo
   ourPhysics.updatePista(cameraXPosition, (cameraXPosition + love.graphics.getWidth()))
@@ -198,7 +205,7 @@ function fase.update(dt)
   
   -- ver se chegou no final
   if lucioX > casaPosition[1] + 50 then
-    fase.reset = true
+    fase.acabou = true
   end
   
 end
