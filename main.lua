@@ -6,6 +6,8 @@
  local estadoMenu = "jogar"
  local delayMenu = 0
  
+ local delayPausa = 0
+ 
  local alturaMundo = 740 -- *****ATUALMENTE TODAS PISTAS (TODAS FASES) TERAO ESSAS DIMENSOES PARA O MUNDO*****
  local laguraMundo = 8000 -- *****ATUALMENTE TODAS PISTAS (TODAS FASES) TERAO ESSAS DIMENSOES PARA O MUNDO*****
  
@@ -38,6 +40,7 @@ end
 function love.update(dt)
   
   delayMenu = delayMenu + dt
+  delayPausa = delayPausa + dt
   
   if (estadoAtual == "jogando") then
     
@@ -50,7 +53,8 @@ function love.update(dt)
     else
       
       --verificar se eh p pausar
-    if (love.keyboard.isDown("p")) then
+    if (love.keyboard.isDown("escape") and delayPausa > 0.2) then
+      delayPausa = 0
       estadoAtual = "pausado"
     else
       -- realizar o update() da fase
@@ -62,7 +66,8 @@ function love.update(dt)
   elseif (estadoAtual == "pausado") then
     
     -- verificar se eh pra voltar ao jogo ou sair para o menu
-    if (love.keyboard.isDown("b")) then
+    if (love.keyboard.isDown("escape") and delayPausa > 0.2) then
+      delayPausa = 0
       estadoAtual = "jogando"
     elseif (love.keyboard.isDown("m")) then
       estadoAtual = "menu"
@@ -130,7 +135,7 @@ function love.draw()
     
     --fazer aviso da tecla de pausa e reset
     love.graphics.setColor(255,255,255)
-    love.graphics.print("Pressione a tecla \"P\" para pausar o jogo.", fase.getXInicialCamera() + (larguraTela/2), fase.getYInicialCamera() + 10)   
+    --love.graphics.print("Pressione a tecla \"ESC\" para pausar o jogo.", fase.getXInicialCamera() + (larguraTela/2), fase.getYInicialCamera() + 10)   
   elseif (estadoAtual == "pausado") then
     -- realizar o draw() da fase e a pausa por cima
     -- fase
@@ -139,7 +144,7 @@ function love.draw()
     love.graphics.setColor(0,0,0, 150)
     love.graphics.rectangle("fill", fase.getXInicialCamera(), fase.getYInicialCamera(), larguraTela, alturaTela)
     love.graphics.setColor(255,255,255)
-    love.graphics.print("Pressione:\n\"B\" -> para voltar ao jogo\n\"R\" -> para reiniciar o jogo\n\"M\" -> para voltar ao menu", fase.getXInicialCamera() + 100, fase.getYInicialCamera() + (alturaTela/2))
+    love.graphics.print("Pressione:\n\"ESC\" -> para voltar ao jogo\n\"R\" -> para reiniciar o jogo\n\"M\" -> para voltar ao menu", fase.getXInicialCamera() + 100, fase.getYInicialCamera() + (alturaTela/2))
     
   elseif (estadoAtual == "menu") then
     love.graphics.setColor(255,255,255)
