@@ -33,6 +33,8 @@ local temperaturaDaPizza = 60
 local framesTermometro = {}
 local framesTermometroAtual = 1
 
+local relogioImagem = null
+
 
 function fase.init(tamanhoPista, alturaPista)
   tamanhoDaPista = tamanhoPista
@@ -64,6 +66,8 @@ function fase.load(numeroFase)
   for x = 1, 5, 1 do
     framesTermometro[x] = love.graphics.newImage ("imagens/termometro"..x..".png")
   end
+  
+  relogioImagem = love.graphics.newImage ("imagens/relogio.png")
   
   local construidorDePista = require "construidorDePista"
   ourPhysics.objects.pista = construidorDePista.carregarPista(numeroFase)
@@ -103,29 +107,25 @@ function fase.update(dt)
     
     -- zerar timer
     tempoDecorrido = 0
-    temperaturaDaPizza = 60
+    temperaturaDaPizza = 400
   end
   
   -- atualizar temperatura da pizza
-  temperaturaDaPizza = temperaturaDaPizza - dt/3
+  temperaturaDaPizza = temperaturaDaPizza - dt/0.1
   -- atualizar o tempoDecorrido
   tempoDecorrido = tempoDecorrido + dt
   -- atualizar frame do termometro
-  if temperaturaDaPizza > 55 then
+  if temperaturaDaPizza > 328 then
     framesTermometroAtual = 1
-  elseif temperaturaDaPizza > 50 then
+  elseif temperaturaDaPizza > 256 then
     framesTermometroAtual = 2
-  elseif temperaturaDaPizza > 45 then
+  elseif temperaturaDaPizza > 184 then
     framesTermometroAtual = 3
-  elseif temperaturaDaPizza > 40 then
+  elseif temperaturaDaPizza > 112 then
     framesTermometroAtual = 4
-  elseif temperaturaDaPizza > 35 then
+  elseif temperaturaDaPizza > 40 then
     framesTermometroAtual = 5
-  end
-  
-  
-  
-  if tempoDecorrido > 60 then
+  elseif temperaturaDaPizza <= 40 then
     fase.reset = true
   end
   
@@ -247,14 +247,12 @@ function fase.draw()
   -- funcao para o ourPhysics desenhar os objetos do physics
   ourPhysics.draw(ourPhysics.objects)
   
-  -- printar a "hud rudimentar"
-  love.graphics.print("Posicao: "..string.sub(tostring(lucioX), 0, 4).."  de 7500", 10 - dx, 10 - dy)
-  love.graphics.print("Tempo decorrido: "..string.sub(tostring(tempoDecorrido), 0, 4), 10 - dx, 25 - dy)
-  love.graphics.print("Temperatura da Pizza: "..string.sub(tostring(temperaturaDaPizza), 0, 4), 10 - dx, 40 - dy)
-  
   -- pirntar HUD
   love.graphics.setColor(255,255,255)
-  love.graphics.draw(framesTermometro[framesTermometroAtual], 740-dx, -dy, 0, .15, .15)
+  love.graphics.draw(framesTermometro[framesTermometroAtual], -10-dx, -dy, 0, .15, .15)
+  love.graphics.print(string.sub(tostring(temperaturaDaPizza), 0, 3).."ºC", 50 - dx, 60 - dy)
+  love.graphics.draw(relogioImagem, 100-dx, 20-dy, 0, .08, .08)
+  love.graphics.print(string.sub(tostring(tempoDecorrido), 0, 3).."s", 165 - dx, 60 - dy)
   
 end
 
@@ -340,6 +338,17 @@ function fase.getYInicialCamera()
   return cameraYPosition
 end
 
-
+function string:split(delimiter)
+  local result = { }
+  local from  = 1
+  local delim_from, delim_to = string.find( self, delimiter, from  )
+  while delim_from do
+    table.insert( result, string.sub( self, from , delim_from-1 ) )
+    from  = delim_to + 1
+    delim_from, delim_to = string.find( self, delimiter, from  )
+  end
+  table.insert( result, string.sub( self, from  ) )
+  return result
+end
 
 return fase
