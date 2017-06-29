@@ -165,7 +165,8 @@ function love.draw()
       love.graphics.setBackgroundColor(60,60,60)
       
       -- TODO: por a imagem de congratulacoes
-      love.graphics.print("UHUUUUUUUUUULLLLLL\nParabéns pra você!!! Uma verdadeira pessoa E C O L Ó G I C A!!!\n\n    Nós, desenvolvedores do EcoDelivery, concebemos todo o universo desse jogo com o intuito de conscientizar\ncada jogador sobre a iportância de mudarmos nosso estilo de vida consumista, materialista, capitalista (pois o\nconsumismo e materialismo são infelizmente intrínsseco ao capitalismo que se conhece :/), antiético, individualista\ne agressivo ao ambiente em que estamos inseridos, a Terra, o mais rápido possível.\n\n    Obrigado por jogar e seja a mudança que você gostaria que acontecesse.\n\n    Obs.: contanto que essa mudança não viole o meio ambiente de uma forma antiética ou que desrespeite\nou seja agressivo com qualquer ser vivo inserido nele, é claro.\n\n    Aperte ESC para voltar ao menu", 50, 200)
+      --love.graphics.print("UHUUUUUUUUUULLLLLL\nParabéns pra você!!! Uma verdadeira pessoa E C O L Ó G I C A!!!\n\n    Nós, desenvolvedores do EcoDelivery, concebemos todo o universo desse jogo com o intuito de conscientizar\ncada jogador sobre a iportância de mudarmos nosso estilo de vida consumista, materialista, capitalista (pois o\nconsumismo e materialismo são infelizmente intrínsseco ao capitalismo que se conhece :/), antiético, individualista\ne agressivo ao ambiente em que estamos inseridos, a Terra, o mais rápido possível.\n\n    Obrigado por jogar e seja a mudança que você gostaria que acontecesse.\n\n    Obs.: contanto que essa mudança não viole o meio ambiente de uma forma antiética ou que desrespeite\nou seja agressivo com qualquer ser vivo inserido nele, é claro.\n\n    Aperte ESC para voltar ao menu", 50, 200)
+      love.graphics.print("UHUUUUUUUUUULLLLLL\nParabéns!!!\nAperte ESC para voltar ao menu.", 50, 200)
     
   end
   
